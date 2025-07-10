@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Calendar, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [activeSection, setActiveSection] = useState('inicio');
   const [isScrolled, setIsScrolled] = useState(false);
   const [targetSection, setTargetSection] = useState(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const isAutoScrolling = useRef(false);
 
   const navItems = [
@@ -17,6 +19,11 @@ const Navbar = () => {
     { name: 'Galería', href: '#galeria', id: 'galeria' },
     { name: 'Contáctanos', href: '#contactanos', id: 'contactanos' },
   ];
+
+  // Efecto para marcar cuando el componente está hidratado
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Detectar scroll para efecto del navbar
   useEffect(() => {
@@ -30,6 +37,8 @@ const Navbar = () => {
 
   // Detectar sección activa mientras se hace scroll
   useEffect(() => {
+    if (!isHydrated) return; // No ejecutar hasta que esté hidratado
+    
     const handleScroll = () => {
       // Si estamos en scroll automático y hay una sección objetivo, no actualizar
       if (isAutoScrolling.current && targetSection) {
@@ -57,9 +66,12 @@ const Navbar = () => {
       });
     };
 
+    // Ejecutar una vez al inicio para establecer la sección correcta
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [targetSection]);
+  }, [targetSection, isHydrated]);
 
   // Función para scroll suave
   const scrollToSection = (sectionId) => {
@@ -87,6 +99,11 @@ const Navbar = () => {
 
   // Determinar qué sección debe mostrarse activa
   const getActiveClass = (itemId) => {
+    // Durante la hidratación, no mostrar ninguna sección activa para evitar mismatch
+    if (!isHydrated) {
+      return false;
+    }
+    
     // Si hay una sección objetivo (click en nav), solo esa se muestra activa
     if (targetSection) {
       return itemId === targetSection;
@@ -98,23 +115,23 @@ const Navbar = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-primary-black-95 backdrop-blur-md shadow-lg' 
-        : 'bg-primary-black'
+        ? 'bg-woodsmoke-950/95 backdrop-blur-md shadow-lg' 
+        : 'bg-woodsmoke-950'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           
           {/* Logo */}
           <div 
-            className="flex-shrink-0 cursor-pointer transition-transform duration-300 hover:scale-105" 
+            className="shrink-0 cursor-pointer transition-transform duration-300 hover:scale-105" 
             onClick={() => scrollToSection('inicio')}
           >
             <Image
               src="/logo.png"
               alt="Logo"
-              width={40}
-              height={40}
-              className="w-auto h-10"
+              width={60}
+              height={60}
+              className="w-auto h-14 sm:h-16"
             />
           </div>
 
@@ -125,16 +142,16 @@ const Navbar = () => {
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`px-3 py-2 text-sm font-medium transition-all duration-300 relative group ${
+                  className={`px-3 py-2 text-sm font-medium transition-all duration-300 relative group cursor-pointer ${
                     getActiveClass(item.id)
                       ? 'text-red-orange-500'
-                      : 'text-primary-white hover:text-primary-red'
+                      : 'text-white-50 hover:text-red-orange-500'
                   }`}
                 >
                   {item.name}
                   
                   {/* Underline animation */}
-                  <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary-red transform transition-transform duration-300 ${
+                  <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-red-orange-500 transform transition-transform duration-300 ${
                     getActiveClass(item.id) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   }`} />
                 </button>
@@ -146,11 +163,18 @@ const Navbar = () => {
           <div className="hidden md:block">
             <Link
               href="/agendar-cita"
-              className="bg-primary-red text-primary-white px-6 py-2 rounded-lg font-medium 
-                       transition-all duration-300 hover:bg-primary-red hover:shadow-red hover:scale-105
-                       active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-red focus:ring-offset-2"
+              className="group inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm
+                       bg-red-orange-500 text-white-50 
+                       border border-red-orange-500
+                       transition-all duration-300 ease-in-out
+                       hover:bg-red-orange-600 hover:border-red-orange-600 
+                       hover:shadow-lg hover:shadow-red-orange-500/25
+                       hover:-translate-y-0.5
+                       active:translate-y-0 active:shadow-md active:shadow-red-orange-500/20
+                       focus:outline-none focus:ring-2 focus:ring-red-orange-500/50 focus:ring-offset-2 focus:ring-offset-woodsmoke-950"
             >
-              📅 Agendar Cita
+              <Calendar className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
+              <span>Agendar Cita</span>
             </Link>
           </div>
 
@@ -177,16 +201,18 @@ const MobileMenu = ({ navItems, getActiveClass, scrollToSection }) => {
       {/* Hamburger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-primary-white hover:text-primary-red transition-colors duration-300 p-2"
+        className="text-white-50 hover:text-red-orange-500 transition-colors duration-300 p-2 rounded-lg hover:bg-mine-shaft-950"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        {isOpen ? (
+          <X className="w-6 h-6" />
+        ) : (
+          <Menu className="w-6 h-6" />
+        )}
       </button>
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-primary-black border border-primary-gray rounded-lg shadow-lg animate-slide-down">
+        <div className="absolute right-0 top-full mt-2 w-48 bg-woodsmoke-950 border border-mine-shaft-950 rounded-lg shadow-lg animate-slide-down">
           <div className="py-2">
             {navItems.map((item) => (
               <button
@@ -197,20 +223,21 @@ const MobileMenu = ({ navItems, getActiveClass, scrollToSection }) => {
                 }}
                 className={`block w-full text-left px-4 py-2 text-sm transition-colors duration-300 ${
                   getActiveClass(item.id)
-                    ? 'text-primary-red bg-primary-gray'
-                    : 'text-primary-white hover:text-primary-red hover:bg-primary-gray'
+                    ? 'text-red-orange-500 bg-mine-shaft-950'
+                    : 'text-white-50 hover:text-red-orange-500 hover:bg-mine-shaft-950'
                 }`}
               >
                 {item.name}
               </button>
             ))}
-            <div className="border-t border-primary-gray mt-2 pt-2">
+            <div className="border-t border-mine-shaft-950 mt-2 pt-2">
               <Link
                 href="/agendar-cita"
-                className="block w-full text-left px-4 py-2 text-sm text-primary-white hover:text-primary-red transition-colors duration-300"
+                className="group flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-white-50 hover:text-red-orange-500 transition-colors duration-300"
                 onClick={() => setIsOpen(false)}
               >
-                📅 Agendar Cita
+                <Calendar className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
+                <span>Agendar Cita</span>
               </Link>
             </div>
           </div>

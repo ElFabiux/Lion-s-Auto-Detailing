@@ -1,5 +1,55 @@
 @import "tailwindcss";
 
+@theme {
+  --color-woodsmoke-50: #f6f6f6;
+  --color-woodsmoke-100: #e7e7e7;
+  --color-woodsmoke-200: #d1d1d1;
+  --color-woodsmoke-300: #b0b0b0;
+  --color-woodsmoke-400: #888888;
+  --color-woodsmoke-500: #6d6d6d;
+  --color-woodsmoke-600: #5d5d5d;
+  --color-woodsmoke-700: #4f4f4f;
+  --color-woodsmoke-800: #454545;
+  --color-woodsmoke-900: #3d3d3d;
+  --color-woodsmoke-950: #161616;
+
+  --color-red-orange-50: #fff2f1;
+  --color-red-orange-100: #ffe3e0;
+  --color-red-orange-200: #ffccc7;
+  --color-red-orange-300: #ffa8a0;
+  --color-red-orange-400: #ff7669;
+  --color-red-orange-500: #f9402e;
+  --color-red-orange-600: #e72d1b;
+  --color-red-orange-700: #c22313;
+  --color-red-orange-800: #a12013;
+  --color-red-orange-900: #852117;
+  --color-red-orange-950: #490c06;
+
+  --color-mine-shaft-50: #f6f6f6;
+  --color-mine-shaft-100: #e7e7e7;
+  --color-mine-shaft-200: #d1d1d1;
+  --color-mine-shaft-300: #b0b0b0;
+  --color-mine-shaft-400: #888888;
+  --color-mine-shaft-500: #6d6d6d;
+  --color-mine-shaft-600: #5d5d5d;
+  --color-mine-shaft-700: #4f4f4f;
+  --color-mine-shaft-800: #454545;
+  --color-mine-shaft-900: #3d3d3d;
+  --color-mine-shaft-950: #2b2b2b;
+
+  --color-white-50: #ffffff;
+  --color-white-100: #efefef;
+  --color-white-200: #dcdcdc;
+  --color-white-300: #bdbdbd;
+  --color-white-400: #989898;
+  --color-white-500: #7c7c7c;
+  --color-white-600: #656565;
+  --color-white-700: #525252;
+  --color-white-800: #464646;
+  --color-white-900: #3d3d3d;
+  --color-white-950: #292929;
+}
+
 /* Variables CSS para los colores */
 :root {
   --color-primary-black: #161616;
@@ -56,5 +106,17 @@ body {
 
   .bg-primary-black-95 {
     background-color: rgba(22, 22, 22, 0.95);
+  }
+}
+
+@layer utilities {
+  /* Clases responsivas para pantallas extra pequeñas */
+  @media (min-width: 475px) {
+    .xs\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+    .xs\:text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .xs\:max-w-sm { max-width: 24rem; }
+    .xs\:bottom-14 { bottom: 3.5rem; }
+    .xs\:left-3 { left: 0.75rem; }
+    .xs\:right-3 { right: 0.75rem; }
   }
 }
