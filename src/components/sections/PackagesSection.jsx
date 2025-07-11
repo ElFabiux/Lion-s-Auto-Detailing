@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Star, Crown, Award } from "lucide-react";
+import { Star, Crown, Award, Gem } from "lucide-react";
 import Link from "next/link";
 import PackageCard from "./PackageCard";
 
@@ -30,53 +30,95 @@ const PackagesSection = () => {
       }
     };
   }, []);
+
   const packages = [
     {
       id: 1,
-      name: "PLATA",
-      price: "₡10,000",
+      name: "BRONCE",
+      subtitle: "Mantenimiento Para Cerámico",
+      basePrice: 30000,
+      prices: {
+        sedan: 30000,
+        suv: 35000,
+        "4x4": 40000
+      },
       icon: Award,
       featured: false,
-      services: [
-        "Lavado exterior completo",
-        "Aspirado interior básico",
-        "Limpieza de vidrios",
-        "Encerado básico",
-      ],
-      color: "from-gray-400 to-gray-600",
-      cardBg: "bg-gradient-to-br from-gray-800/90 to-gray-900/90",
-    },
-    {
-      id: 2,
-      name: "BRONCE",
-      price: "₡20,000",
-      icon: Star,
-      featured: true,
-      services: [
-        "Todo lo del paquete Plata",
-        "Limpieza profunda interior",
-        "Tratamiento de llantas",
-        "Ambientador premium",
-        "Protección UV",
+      highlights: [
+        "Sistema de filtración anti-gota seca",
+        "Lavado con espuma activa",
+        "Sellador Wet Coat superior a cera",
+        "Quick Detailer base sílica",
+        "Reacondicionado completo interior"
       ],
       color: "from-amber-600 to-amber-800",
       cardBg: "bg-gradient-to-br from-amber-900/90 to-red-orange-900/90",
     },
     {
+      id: 2,
+      name: "PLATA",
+      subtitle: "Limpieza Profunda",
+      basePrice: 85000,
+      prices: {
+        sedan: 85000,
+        suv: 95000,
+        "4x4": 105000
+      },
+      icon: Star,
+      featured: false,
+      highlights: [
+        "Limpieza de techo completa",
+        "Extracción y limpieza de asientos",
+        "Aspirado y cepillado profundo",
+        "Protección Plastic Care",
+        "Limpieza de cinturones"
+      ],
+      color: "from-gray-400 to-gray-600",
+      cardBg: "bg-gradient-to-br from-gray-800/90 to-gray-900/90",
+    },
+    {
       id: 3,
       name: "ORO",
-      price: "₡35,000",
+      subtitle: "Abrillantado UNO Protect",
+      basePrice: 155000,
+      prices: {
+        sedan: 155000,
+        suv: 175000,
+        "4x4": 195000
+      },
       icon: Crown,
-      featured: false,
-      services: [
-        "Todo lo del paquete Bronce",
-        "Detallado completo",
-        "Encerado premium",
-        "Limpieza de motor",
-        "Protección de asientos",
+      featured: true,
+      highlights: [
+        "Solo pintura - Especializado",
+        "Descontaminación con Clay Bar",
+        "Pulido un solo paso UNO protect",
+        "Protección hasta 6 meses",
+        "Rehidratación plásticos externos"
       ],
-      color: "from-yellow-400 to-yellow-600",
-      cardBg: "bg-gradient-to-br from-yellow-900/90 to-amber-900/90",
+      color: "from-yellow-300 to-yellow-500",
+      cardBg: "bg-gradient-to-br from-yellow-800/90 to-yellow-700/90",
+    },
+    {
+      id: 4,
+      name: "DIAMANTE",
+      subtitle: "Tratamiento Cerámico Completo",
+      basePrice: 200000,
+      prices: {
+        sedan: 200000,
+        suv: 230000,
+        "4x4": 260000
+      },
+      icon: Gem,
+      featured: false,
+      highlights: [
+        "Protección hasta duradera",
+        "Revestimiento cerámico alta resistencia",
+        "Tratamiento cerámico para vidrios",
+        "Brillo intenso efecto espejo",
+        "Resistencia UV y químicos"
+      ],
+      color: "from-blue-400 to-purple-600",
+      cardBg: "bg-gradient-to-br from-blue-900/90 to-purple-900/90",
     },
   ];
 
@@ -119,26 +161,10 @@ const PackagesSection = () => {
             </div>
 
             {/* Packages Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8 lg:gap-6">
               {packages.map((pkg, index) => (
                 <PackageCard key={pkg.id} pkg={pkg} index={index} />
               ))}
-            </div>
-
-            {/* Bottom CTA */}
-            <div className="text-center mt-16">
-              <p className="text-gray-300 mb-6">
-                ¿No encuentras el paquete perfecto? Contáctanos para crear uno
-                personalizado
-              </p>
-              <Link
-                href="/agendar-cita"
-                className="inline-flex items-center gap-2 bg-transparent border-2 border-red-orange-500 text-red-orange-500 px-8 py-3 rounded-lg font-semibold
-                       transition-all duration-300 hover:bg-red-orange-500 hover:text-white hover:scale-105
-                       active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-orange-500 focus:ring-offset-2 focus:ring-offset-transparent"
-              >
-                Contactar para Paquete Personalizado
-              </Link>
             </div>
           </div>
         </div>
