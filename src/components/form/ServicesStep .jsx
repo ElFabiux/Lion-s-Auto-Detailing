@@ -20,7 +20,8 @@ import {
 const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(data.selectedPackage);
-  const [selectedVehicle, setSelectedVehicle] = useState("sedan");
+  // CAMBIO: Inicializar con el vehículo guardado o sedan por defecto
+  const [selectedVehicle, setSelectedVehicle] = useState(data.selectedVehicle || "sedan");
   const [additionalMessage, setAdditionalMessage] = useState(
     data.additionalMessage || ""
   );
@@ -110,16 +111,30 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
+    // CAMBIO: Incluir selectedVehicle en updateData
     updateData({
       selectedPackage: pkg,
+      selectedVehicle, // Agregar esta línea
+      additionalMessage,
+    });
+  };
+
+  // CAMBIO: Nueva función para manejar cambio de vehículo
+  const handleVehicleChange = (vehicleType) => {
+    setSelectedVehicle(vehicleType);
+    updateData({
+      selectedPackage,
+      selectedVehicle: vehicleType, // Guardar el tipo de vehículo
       additionalMessage,
     });
   };
 
   const handleMessageChange = (message) => {
     setAdditionalMessage(message);
+    // CAMBIO: Incluir selectedVehicle en updateData
     updateData({
       selectedPackage,
+      selectedVehicle, // Agregar esta línea
       additionalMessage: message,
     });
   };
@@ -162,7 +177,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
                 return (
                   <button
                     key={vehicle.key}
-                    onClick={() => setSelectedVehicle(vehicle.key)}
+                    onClick={() => handleVehicleChange(vehicle.key)}
                     className={`flex flex-col items-center p-2 sm:p-3 rounded-md transition-all duration-300 ${
                       selectedVehicle === vehicle.key
                         ? "bg-red-orange-500 text-white"

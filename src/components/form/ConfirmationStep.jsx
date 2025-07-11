@@ -1,7 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { User, Calendar, Package, MessageSquare, CheckCircle, ArrowLeft, X, Send, Edit, Clock, Car } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  User,
+  Calendar,
+  CalendarClock,
+  CalendarCheck,
+  Package,
+  MessageSquare,
+  CheckCircle,
+  ArrowLeft,
+  X,
+  Send,
+  Edit,
+  Clock,
+  CarFront,
+  CircleCheck,
+  ThumbsUp,
+  OctagonAlert,
+} from "lucide-react";
 
 const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -12,46 +29,81 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   }, []);
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('es-CR', {
-      style: 'currency',
-      currency: 'CRC',
+    return new Intl.NumberFormat("es-CR", {
+      style: "currency",
+      currency: "CRC",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    
+
     // Simular envío
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     onSubmit();
   };
 
   const getDayName = (dateString) => {
-    const [day, month, year] = dateString.split('/');
+    const [day, month, year] = dateString.split("/");
     const date = new Date(year, month - 1, day);
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const days = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
     return days[date.getDay()];
   };
 
   const getMonthName = (dateString) => {
-    const [day, month, year] = dateString.split('/');
-    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const [day, month, year] = dateString.split("/");
+    const months = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
     return months[parseInt(month) - 1];
   };
 
+  // Obtener el tipo de vehículo seleccionado
+  const selectedVehicle = formData.services.selectedVehicle || "sedan";
+
+  // Obtener el precio según el tipo de vehículo
+  const packagePrice =
+    formData.services.selectedPackage.prices[selectedVehicle];
+
+  // Mapear los nombres de los vehículos para mostrar
+  const vehicleNames = {
+    sedan: "Sedán",
+    suv: "SUV",
+    "4x4": "4x4",
+  };
+
   return (
-    <div className={`transition-all duration-700 h-full flex items-center justify-center ${isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+    <div
+      className={`transition-all duration-700 h-full flex items-center justify-center ${
+        isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+    >
       {/* Container responsive - móvil: full height, desktop: tamaño fijo centrado */}
       <div className="w-full h-full lg:h-auto lg:max-h-[85vh] lg:w-[900px] lg:max-w-4xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden min-w-0">
-        
         {/* Header - fijo en la parte superior */}
         <div className="flex-shrink-0 text-center p-4 sm:p-6 lg:p-8 pb-4 sm:pb-6">
-          <div className="inline-flex p-3 sm:p-4 bg-green-500/20 rounded-full mb-3 sm:mb-4">
-            <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />
-          </div>
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">
             VERIFIQUE SU INFORMACIÓN
           </h2>
@@ -65,7 +117,6 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
         <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 min-w-0 px-4 sm:px-6 lg:px-8">
           {/* Information Summary */}
           <div className="space-y-4 sm:space-y-6">
-            
             {/* Personal Information */}
             <div className="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
               <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -79,16 +130,28 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div>
-                  <span className="text-white/60 text-xs sm:text-sm">Nombre:</span>
-                  <p className="text-white font-medium text-sm sm:text-base">{formData.personalInfo.name}</p>
+                  <span className="text-white/60 text-xs sm:text-sm">
+                    Nombre:
+                  </span>
+                  <p className="text-white font-medium text-sm sm:text-base">
+                    {formData.personalInfo.name}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-white/60 text-xs sm:text-sm">Teléfono:</span>
-                  <p className="text-white font-medium text-sm sm:text-base">{formData.personalInfo.phone}</p>
+                  <span className="text-white/60 text-xs sm:text-sm">
+                    Teléfono:
+                  </span>
+                  <p className="text-white font-medium text-sm sm:text-base">
+                    {formData.personalInfo.phone}
+                  </p>
                 </div>
                 <div className="sm:col-span-1">
-                  <span className="text-white/60 text-xs sm:text-sm">Correo:</span>
-                  <p className="text-white font-medium text-sm sm:text-base break-all">{formData.personalInfo.email}</p>
+                  <span className="text-white/60 text-xs sm:text-sm">
+                    Correo:
+                  </span>
+                  <p className="text-white font-medium text-sm sm:text-base break-all">
+                    {formData.personalInfo.email}
+                  </p>
                 </div>
               </div>
             </div>
@@ -97,10 +160,12 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
             <div className="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
               <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
-                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                  <CalendarClock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                 </div>
                 <h4 className="text-base sm:text-lg font-semibold text-white">
-                  <span className="hidden sm:inline">Fecha y Hora de la Cita</span>
+                  <span className="hidden sm:inline">
+                    Fecha y Hora de la Cita
+                  </span>
                   <span className="sm:hidden">Fecha y Hora</span>
                 </h4>
               </div>
@@ -108,17 +173,30 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                 <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-black/20 rounded-lg">
                   <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-red-orange-500" />
                   <div>
-                    <span className="text-white/60 text-xs sm:text-sm">Fecha:</span>
-                    <p className="text-white font-medium text-sm sm:text-base">{formData.dateTime.selectedDate}</p>
-                    <p className="text-white/80 text-xs sm:text-sm">{getDayName(formData.dateTime.selectedDate)}, {getMonthName(formData.dateTime.selectedDate)}</p>
+                    <span className="text-white/60 text-xs sm:text-sm">
+                      Fecha:
+                    </span>
+                    <p className="text-white font-medium text-sm sm:text-base">
+                      {formData.dateTime.selectedDate}
+                    </p>
+                    <p className="text-white/80 text-xs sm:text-sm">
+                      {getDayName(formData.dateTime.selectedDate)},{" "}
+                      {getMonthName(formData.dateTime.selectedDate)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-black/20 rounded-lg">
                   <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-red-orange-500" />
                   <div>
-                    <span className="text-white/60 text-xs sm:text-sm">Hora:</span>
-                    <p className="text-white font-medium text-sm sm:text-base">{formData.dateTime.selectedTime}</p>
-                    <p className="text-white/80 text-xs sm:text-sm">Hora confirmada</p>
+                    <span className="text-white/60 text-xs sm:text-sm">
+                      Hora:
+                    </span>
+                    <p className="text-white font-medium text-sm sm:text-base">
+                      {formData.dateTime.selectedTime}
+                    </p>
+                    <p className="text-white/80 text-xs sm:text-sm">
+                      Hora confirmada
+                    </p>
                   </div>
                 </div>
               </div>
@@ -127,8 +205,8 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
             {/* Service Package */}
             <div className="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
               <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <div className="p-1.5 sm:p-2 bg-yellow-500/20 rounded-lg">
-                  <Package className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+                <div className="p-1.5 sm:p-2 bg-emerald-500/20 rounded-lg">
+                  <Package className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
                 </div>
                 <h4 className="text-base sm:text-lg font-semibold text-white">
                   <span className="hidden sm:inline">Paquete Seleccionado</span>
@@ -148,9 +226,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                   </div>
                   <div className="text-left sm:text-right">
                     <p className="text-xl sm:text-2xl font-bold text-red-orange-500">
-                      {formatPrice(formData.services.selectedPackage.prices.sedan)}
+                      {formatPrice(packagePrice)}
                     </p>
-                    <p className="text-white/60 text-xs sm:text-sm">Precio para Sedán</p>
+                    <p className="text-white/60 text-xs sm:text-sm">Precio para {vehicleNames[selectedVehicle]}</p>
                   </div>
                 </div>
                 
@@ -158,7 +236,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
                   {formData.services.selectedPackage.highlights.map((highlight, index) => (
                     <div key={index} className="flex items-start gap-2">
-                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                      <CircleCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 mt-0.5 flex-shrink-0" />
                       <span className="text-white/80 text-xs sm:text-sm leading-tight">{highlight}</span>
                     </div>
                   ))}
@@ -179,7 +257,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                   </h4>
                 </div>
                 <div className="bg-black/20 rounded-lg p-3 sm:p-4">
-                  <p className="text-white/90 italic text-sm sm:text-base">"{formData.services.additionalMessage}"</p>
+                  <p className="text-white/90 italic text-sm sm:text-base">
+                    "{formData.services.additionalMessage}"
+                  </p>
                 </div>
               </div>
             )}
@@ -187,7 +267,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
             {/* Summary Box */}
             <div className="bg-gradient-to-r from-red-orange-500/20 to-red-orange-600/20 rounded-xl p-4 sm:p-6 border border-red-orange-500/30">
               <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 text-center">Resumen de la Cita</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div className="flex flex-col items-center gap-2">
                   <User className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
                   <div>
@@ -196,7 +276,14 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                   </div>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
+                  <CarFront className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
+                  <div>
+                    <p className="text-white font-medium text-sm sm:text-base">{vehicleNames[selectedVehicle]}</p>
+                    <p className="text-white/60 text-xs sm:text-sm">Vehículo</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <CalendarCheck className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
                   <div>
                     <p className="text-white font-medium text-sm sm:text-base">{formData.dateTime.selectedDate}</p>
                     <p className="text-white font-medium text-sm sm:text-base">{formData.dateTime.selectedTime}</p>
@@ -209,23 +296,27 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                   Paquete {formData.services.selectedPackage.name}
                 </p>
                 <p className="text-red-orange-500 font-semibold text-base sm:text-lg">
-                  {formatPrice(formData.services.selectedPackage.prices.sedan)}
+                  {formatPrice(packagePrice)}
                 </p>
               </div>
             </div>
 
             {/* Important Notice */}
-            <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+            <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-yellow-500/15 border border-yellow-500/30 rounded-lg">
               <div className="flex items-start gap-2 sm:gap-3">
-                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                <OctagonAlert className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
                 <div>
                   <h5 className="text-white font-semibold mb-1 text-sm sm:text-base">
-                    <span className="hidden sm:inline">Información Importante</span>
+                    <span className="hidden sm:inline">
+                      Información Importante
+                    </span>
                     <span className="sm:hidden">Importante</span>
                   </h5>
                   <p className="text-white/80 text-xs sm:text-sm leading-relaxed">
-                    Al confirmar esta cita, recibirá un mensaje de confirmación por WhatsApp y correo electrónico. 
-                    Nos comunicaremos con usted 24 horas antes de la cita para confirmar los detalles finales.
+                    Al confirmar esta cita, recibirá un mensaje de confirmación
+                    por WhatsApp y correo electrónico. Nos comunicaremos con
+                    usted 24 horas antes de la cita para confirmar los detalles
+                    finales.
                   </p>
                 </div>
               </div>
@@ -262,8 +353,8 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
               disabled={isSubmitting}
               className={`group flex items-center justify-center gap-2 px-4 py-3 sm:px-8 sm:py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg min-w-[48px] sm:min-w-auto ${
                 isSubmitting
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-green-500 hover:bg-green-600 text-white hover:shadow-xl hover:shadow-green-500/25'
+                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600 text-white hover:shadow-xl hover:shadow-green-500/25"
               }`}
             >
               {isSubmitting ? (
@@ -273,9 +364,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                 </>
               ) : (
                 <>
-                <span className="hidden sm:inline">CONFIRMAR CITA</span>
-                <span className="sm:hidden">CONFIRMAR</span>
-                <Send className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
+                  <Send className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
+                  <span className="hidden sm:inline">CONFIRMAR CITA</span>
+                  <span className="sm:hidden">CONFIRMAR</span>
                 </>
               )}
             </button>
@@ -286,7 +377,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-black/20 rounded-full backdrop-blur-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-xs text-white/60">
-                <span className="hidden sm:inline">Paso 4 de 4 - Confirmación Final</span>
+                <span className="hidden sm:inline">
+                  Paso 4 de 4 - Confirmación Final
+                </span>
                 <span className="sm:hidden">Paso 4 de 4</span>
               </span>
             </div>
@@ -296,10 +389,14 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
 
       <style jsx>{`
         @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
-        
+
         .animate-spin {
           animation: spin 1s linear infinite;
         }
@@ -308,17 +405,17 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
         .flex-1::-webkit-scrollbar {
           width: 4px;
         }
-        
+
         .flex-1::-webkit-scrollbar-track {
           background: rgba(255, 255, 255, 0.1);
           border-radius: 2px;
         }
-        
+
         .flex-1::-webkit-scrollbar-thumb {
           background: #f9402e;
           border-radius: 2px;
         }
-        
+
         .flex-1::-webkit-scrollbar-thumb:hover {
           background: #e63228;
         }

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { User, Calendar, Settings, CheckCircle } from 'lucide-react';
+import { User, Calendar, Settings, Check, ThumbsUp } from 'lucide-react';
 
 const FormSidebar = ({ currentStep }) => {
   const steps = [
@@ -23,7 +23,7 @@ const FormSidebar = ({ currentStep }) => {
     {
       number: 4,
       title: "Confirmar",
-      icon: CheckCircle
+      icon: ThumbsUp
     }
   ];
 
@@ -78,7 +78,7 @@ const FormSidebar = ({ currentStep }) => {
                       : 'border-white/20 text-white/60'
                   }`}>
                     {isCompleted ? (
-                      <CheckCircle className="w-5 h-5" />
+                      <Check className="w-5 h-5" />
                     ) : (
                       <span className="text-sm font-bold">{step.number}</span>
                     )}
@@ -128,9 +128,6 @@ const FormSidebar = ({ currentStep }) => {
           <div className="text-xs text-white/40">
             Sistema de Agendamiento
           </div>
-          <div className="text-xs text-red-orange-500/60 mt-1">
-            Paso {currentStep} de 4
-          </div>
         </div>
       </div>
 
@@ -156,7 +153,7 @@ const FormSidebar = ({ currentStep }) => {
                       : 'border-gray-600 text-gray-600 bg-gray-800/50'
                   }`}>
                     {isCompleted ? (
-                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                     ) : (
                       <span>{step.number}</span>
                     )}

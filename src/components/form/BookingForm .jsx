@@ -21,6 +21,7 @@ const BookingForm = () => {
     },
     services: {
       selectedPackage: null,
+      selectedVehicle: 'sedan', // CAMBIO: Agregar selectedVehicle
       additionalMessage: ''
     }
   });
