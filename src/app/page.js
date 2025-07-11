@@ -1,6 +1,7 @@
 import HeroCarousel from '@/components/sections/HeroCarousel';
 import ServicesSection from '@/components/sections/ServicesSection';
 import PackagesSection from '@/components/sections/PackagesSection';
+import GallerySection from '@/components/sections/GallerySection';
 
 export default function Home() {
   return (
@@ -16,12 +17,7 @@ export default function Home() {
       <PackagesSection />
 
       {/* Sección Galería */}
-      <section id="galeria" className="min-h-screen bg-primary-gray flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-4xl font-bold text-primary-white mb-4">Galería</h2>
-          <p className="text-gray-300">Contenido de galería aquí</p>
-        </div>
-      </section>
+      <GallerySection />
 
       {/* Sección Contáctanos */}
       <section id="contactanos" className="min-h-screen bg-primary-black flex items-center justify-center">
