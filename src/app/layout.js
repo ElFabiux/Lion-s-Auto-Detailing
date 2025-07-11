@@ -8,8 +8,8 @@ const inter = Inter({
 })
 
 export const metadata = {
-  title: 'Tu Empresa - Servicios Profesionales',
-  description: 'Descripción de tu empresa y servicios',
+  title: 'Lion\'s Auto Detailing',
+  description: 'Mejor lugar para tu auto',
 }
 
 export default function RootLayout({ children }) {
