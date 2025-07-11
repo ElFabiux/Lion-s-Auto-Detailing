@@ -11,6 +11,9 @@ const Navbar = () => {
   const [targetSection, setTargetSection] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const isAutoScrolling = useRef(false);
+  const lastScrollY = useRef(0);
+  const scrollDirection = useRef('down');
+  const autoScrollTimer = useRef(null);
 
   const navItems = [
     { name: 'Inicio', href: '#inicio', id: 'inicio' },
@@ -37,17 +40,38 @@ const Navbar = () => {
 
   // Detectar sección activa mientras se hace scroll
   useEffect(() => {
-    if (!isHydrated) return; // No ejecutar hasta que esté hidratado
+    if (!isHydrated) return;
     
     const handleScroll = () => {
-      // Si estamos en scroll automático y hay una sección objetivo, no actualizar
+      const currentScrollY = window.scrollY;
+      
+      // Detectar dirección del scroll
+      if (currentScrollY > lastScrollY.current) {
+        scrollDirection.current = 'down';
+      } else {
+        scrollDirection.current = 'up';
+      }
+      lastScrollY.current = currentScrollY;
+
+      // Si estamos en scroll automático, no actualizar activeSection
       if (isAutoScrolling.current && targetSection) {
         return;
       }
 
       const sections = navItems.map(item => document.getElementById(item.id));
       const scrollPosition = window.scrollY + 100;
+      
+      // Verificar si estamos al final de la página para activar "Contáctanos"
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const isAtBottom = (windowHeight + window.scrollY) >= (documentHeight - 10);
 
+      if (isAtBottom) {
+        setActiveSection('contactanos');
+        return;
+      }
+
+      // Lógica normal para detectar sección activa
       sections.forEach((section, index) => {
         if (section) {
           const sectionTop = section.offsetTop;
@@ -55,12 +79,6 @@ const Navbar = () => {
           
           if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
             setActiveSection(navItems[index].id);
-            
-            // Si llegamos a la sección objetivo, limpiar el estado
-            if (targetSection === navItems[index].id) {
-              setTargetSection(null);
-              isAutoScrolling.current = false;
-            }
           }
         }
       });
@@ -76,25 +94,56 @@ const Navbar = () => {
   // Función para scroll suave
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
-    if (element) {
-      // Marcar que estamos en scroll automático
-      isAutoScrolling.current = true;
-      setTargetSection(sectionId);
-      
-      const offsetTop = element.offsetTop - 80;
-      
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
-      });
+    if (!element) return;
 
-      // Después de un tiempo prudencial, asegurarse de que el scroll automático termine
-      setTimeout(() => {
-        isAutoScrolling.current = false;
-        setActiveSection(sectionId);
-        setTargetSection(null);
-      }, 1000);
+    // Limpiar timer anterior si existe
+    if (autoScrollTimer.current) {
+      clearTimeout(autoScrollTimer.current);
     }
+
+    // Marcar que estamos en scroll automático
+    isAutoScrolling.current = true;
+    setTargetSection(sectionId);
+    
+    // Inmediatamente cambiar a la sección objetivo para evitar parpadeos
+    setActiveSection(sectionId);
+    
+    let offsetTop;
+    
+    // Si es "Contáctanos", ir al final de la página
+    if (sectionId === 'contactanos') {
+      offsetTop = document.documentElement.scrollHeight - window.innerHeight;
+    } else {
+      offsetTop = element.offsetTop - 80;
+    }
+    
+    window.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth'
+    });
+
+    // Timer más largo para asegurar que el scroll automático termine
+    autoScrollTimer.current = setTimeout(() => {
+      isAutoScrolling.current = false;
+      setTargetSection(null);
+      
+      // Verificar la posición final y ajustar si es necesario
+      const finalScrollCheck = () => {
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const isAtBottom = (windowHeight + window.scrollY) >= (documentHeight - 10);
+        
+        if (sectionId === 'contactanos' && !isAtBottom) {
+          // Si intentamos ir a contactanos pero no llegamos al final, ajustar
+          window.scrollTo({
+            top: document.documentElement.scrollHeight - window.innerHeight,
+            behavior: 'smooth'
+          });
+        }
+      };
+      
+      setTimeout(finalScrollCheck, 100);
+    }, 1500);
   };
 
   // Determinar qué sección debe mostrarse activa
@@ -108,9 +157,19 @@ const Navbar = () => {
     if (targetSection) {
       return itemId === targetSection;
     }
+    
     // Si no, usar la sección actual basada en scroll
     return itemId === activeSection;
   };
+
+  // Cleanup del timer al desmontar
+  useEffect(() => {
+    return () => {
+      if (autoScrollTimer.current) {
+        clearTimeout(autoScrollTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
