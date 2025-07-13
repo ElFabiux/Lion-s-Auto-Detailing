@@ -9,6 +9,7 @@ import ConfirmationStep from './ConfirmationStep';
 
 const BookingForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     personalInfo: {
       name: '',
@@ -17,11 +18,12 @@ const BookingForm = () => {
     },
     dateTime: {
       selectedDate: null,
-      selectedTime: null
+      selectedTime: null,
+      slotId: null // ID del slot en Notion
     },
     services: {
       selectedPackage: null,
-      selectedVehicle: 'sedan', // CAMBIO: Agregar selectedVehicle
+      selectedVehicle: 'sedan',
       additionalMessage: ''
     }
   });
@@ -49,12 +51,46 @@ const BookingForm = () => {
     window.location.href = '/';
   };
 
-  const submitForm = () => {
-    // Aquí iría la lógica de envío
-    console.log('Formulario enviado:', formData);
-    // Por ahora mostrar alerta y redirigir
-    alert('¡Cita agendada exitosamente! Te contactaremos pronto.');
-    window.location.href = '/';
+  const submitForm = async () => {
+    try {
+      setIsSubmitting(true);
+
+      // Validar que tenemos todos los datos necesarios
+      if (!formData.dateTime.slotId || !formData.personalInfo.name || !formData.services.selectedPackage) {
+        throw new Error('Datos incompletos para agendar la cita');
+      }
+
+      // Enviar datos a la API
+      const response = await fetch('/api/book-appointment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          slotId: formData.dateTime.slotId,
+          personalInfo: formData.personalInfo,
+          services: formData.services,
+          dateTime: formData.dateTime
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Mostrar mensaje de éxito
+        alert('¡Cita agendada exitosamente! Te contactaremos pronto para confirmar los detalles.');
+        
+        // Redirigir al inicio
+        window.location.href = '/';
+      } else {
+        throw new Error(result.error || 'Error al agendar la cita');
+      }
+    } catch (error) {
+      console.error('Error al enviar formulario:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStep = () => {
@@ -95,6 +131,7 @@ const BookingForm = () => {
             onSubmit={submitForm}
             onPrev={prevStep}
             onExit={exitForm}
+            isSubmitting={isSubmitting}
           />
         );
       default:
