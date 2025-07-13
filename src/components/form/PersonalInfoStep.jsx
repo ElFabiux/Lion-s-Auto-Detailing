@@ -94,7 +94,7 @@ const PersonalInfoStep = ({ data, updateData, onNext, onExit }) => {
               </div>
               <input
                 type="text"
-                placeholder="Nombre"
+                placeholder="Nombre / Apodo"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 className={`w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border rounded-lg text-white placeholder-white/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-orange-500 focus:border-transparent text-sm sm:text-base ${

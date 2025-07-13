@@ -89,7 +89,7 @@ const GallerySection = () => {
         src: "/exterior-gallery/gallery-exterior-6.jpg",
         alt: "Detalles",
         title: "Detalles Perfectos",
-        description: "Cada rincón con atención especial",
+        description: "Cuidamos cada detalle para que tu auto luzca como nuevo",
       },
     ],
     interior: [

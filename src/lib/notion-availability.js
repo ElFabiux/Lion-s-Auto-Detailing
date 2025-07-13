@@ -1,5 +1,5 @@
 // lib/notion-availability.js
-// Funciones para la tabla de disponibilidad (ahora maneja toda la info del cliente)
+// Funciones para la tabla de disponibilidad (SIN campo "Dia")
 
 import { Client } from '@notionhq/client';
 import { getDatabaseId, validateNotionConfig, NOTION_CONFIG } from './notion-config';
@@ -10,7 +10,16 @@ const notion = new Client({
 });
 
 /**
- * Obtener todas las citas disponibles
+ * Función auxiliar para calcular el día de la semana desde una fecha
+ */
+function calculateDayOfWeek(isoDate) {
+  const date = new Date(isoDate + 'T00:00:00');
+  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  return days[date.getDay()];
+}
+
+/**
+ * Obtener todas las citas disponibles CON DÍA CALCULADO AUTOMÁTICAMENTE
  */
 export async function getAvailableSlots() {
   try {
@@ -18,6 +27,7 @@ export async function getAvailableSlots() {
     
     const databaseId = getDatabaseId('availability');
     
+    // Traer TODAS las citas con estado "Disponible"
     const response = await notion.databases.query({
       database_id: databaseId,
       filter: {
@@ -38,17 +48,39 @@ export async function getAvailableSlots() {
       ]
     });
 
-    const slots = response.results.map(page => ({
-      id: page.id,
-      fecha: page.properties.Fecha?.date?.start || '',
-      hora: page.properties.Hora?.rich_text?.[0]?.plain_text || '',
-      dia: page.properties.Dia?.rich_text?.[0]?.plain_text || '',
-      estado: page.properties.Estado?.select?.name || ''
-    }));
+    // Mapear resultados y CALCULAR el día automáticamente
+    const allSlots = response.results.map(page => {
+      const fecha = page.properties.Fecha?.date?.start || '';
+      
+      return {
+        id: page.id,
+        fecha: fecha,
+        hora: page.properties.Hora?.rich_text?.[0]?.plain_text || '',
+        dia: fecha ? calculateDayOfWeek(fecha) : '', // CALCULADO AUTOMÁTICAMENTE
+        estado: page.properties.Estado?.select?.name || ''
+      };
+    });
 
+    // FILTRAR SILENCIOSAMENTE: Solo incluir slots con campos obligatorios completos
+    const validSlots = allSlots.filter(slot => {
+      const hasDate = slot.fecha && slot.fecha.trim() !== '';
+      const hasTime = slot.hora && slot.hora.trim() !== '';
+      const hasStatus = slot.estado && slot.estado.trim() !== '';
+      
+      return hasDate && hasTime && hasStatus;
+    });
+
+    // Log silencioso para el desarrollador
+    const excludedCount = allSlots.length - validSlots.length;
+    if (excludedCount > 0) {
+      console.log(`🔍 Filtrado automático: ${excludedCount} slots con campos incompletos excluidos silenciosamente`);
+    }
+    console.log(`✅ Devolviendo ${validSlots.length} slots válidos de ${allSlots.length} total (días calculados automáticamente)`);
+
+    // SIEMPRE devolver éxito, incluso si no hay slots válidos
     return {
       success: true,
-      data: slots
+      data: validSlots
     };
   } catch (error) {
     console.error('Error al obtener slots de disponibilidad:', error);
@@ -60,19 +92,29 @@ export async function getAvailableSlots() {
 }
 
 /**
- * Agendar una cita - actualiza el slot con toda la información del cliente y servicio
+ * Agendar una cita - CON NOMBRE DEL CLIENTE EN EL TÍTULO
  */
 export async function bookSlot(slotId, clientInfo, serviceInfo) {
   try {
     validateNotionConfig(['availability']);
     
     const updateProperties = {
+      // NUEVO: Actualizar el título con el nombre del cliente
+      Nombre: {
+        title: [
+          {
+            text: {
+              content: `${clientInfo.name}` // Solo el nombre del cliente
+            }
+          }
+        ]
+      },
       Estado: {
         select: {
           name: 'Ocupado'
         }
       },
-      // Información del cliente
+      // Información básica del cliente
       Cliente: {
         rich_text: [
           {
@@ -164,15 +206,33 @@ export async function bookSlot(slotId, clientInfo, serviceInfo) {
 }
 
 /**
- * Cancelar una cita - liberar el slot
+ * Cancelar una cita - RESTAURAR TÍTULO ORIGINAL
  */
 export async function cancelSlot(slotId) {
   try {
     validateNotionConfig(['availability']);
     
+    // Primero obtener la información del slot para reconstruir el título original
+    const slotResponse = await notion.pages.retrieve({
+      page_id: slotId
+    });
+    
+    const fecha = slotResponse.properties.Fecha?.date?.start || '';
+    const hora = slotResponse.properties.Hora?.rich_text?.[0]?.plain_text || '';
+    
     await notion.pages.update({
       page_id: slotId,
       properties: {
+        // RESTAURAR título original con fecha y hora
+        Nombre: {
+          title: [
+            {
+              text: {
+                content: `Cita ${fecha} ${hora}`
+              }
+            }
+          ]
+        },
         Estado: {
           select: {
             name: 'Disponible'
@@ -202,7 +262,7 @@ export async function cancelSlot(slotId) {
 }
 
 /**
- * Obtener todas las citas agendadas (con Estado = Ocupado)
+ * Obtener todas las citas agendadas - CON DÍA CALCULADO
  */
 export async function getBookedSlots() {
   try {
@@ -230,19 +290,23 @@ export async function getBookedSlots() {
       ]
     });
 
-    const bookedSlots = response.results.map(page => ({
-      id: page.id,
-      fecha: page.properties.Fecha?.date?.start || '',
-      hora: page.properties.Hora?.rich_text?.[0]?.plain_text || '',
-      dia: page.properties.Dia?.rich_text?.[0]?.plain_text || '',
-      cliente: page.properties.Cliente?.rich_text?.[0]?.plain_text || '',
-      telefono: page.properties.Telefono?.rich_text?.[0]?.plain_text || '',
-      email: page.properties.Email?.rich_text?.[0]?.plain_text || '',
-      paquete: page.properties.Paquete?.rich_text?.[0]?.plain_text || '',
-      vehiculo: page.properties.Vehiculo?.select?.name || '',
-      precio: page.properties.Precio?.number || 0,
-      mensaje: page.properties.Mensaje?.rich_text?.[0]?.plain_text || ''
-    }));
+    const bookedSlots = response.results.map(page => {
+      const fecha = page.properties.Fecha?.date?.start || '';
+      
+      return {
+        id: page.id,
+        fecha: fecha,
+        hora: page.properties.Hora?.rich_text?.[0]?.plain_text || '',
+        dia: fecha ? calculateDayOfWeek(fecha) : '', // CALCULADO AUTOMÁTICAMENTE
+        cliente: page.properties.Cliente?.rich_text?.[0]?.plain_text || '',
+        telefono: page.properties.Telefono?.rich_text?.[0]?.plain_text || '',
+        email: page.properties.Email?.rich_text?.[0]?.plain_text || '',
+        paquete: page.properties.Paquete?.rich_text?.[0]?.plain_text || '',
+        vehiculo: page.properties.Vehiculo?.select?.name || '',
+        precio: page.properties.Precio?.number || 0,
+        mensaje: page.properties.Mensaje?.rich_text?.[0]?.plain_text || ''
+      };
+    });
 
     return {
       success: true,
@@ -258,7 +322,7 @@ export async function getBookedSlots() {
 }
 
 /**
- * Crear un nuevo slot de disponibilidad
+ * Crear un nuevo slot de disponibilidad - SIN campo "Dia"
  */
 export async function createAvailabilitySlot(slotData) {
   try {
@@ -294,15 +358,7 @@ export async function createAvailabilitySlot(slotData) {
             }
           ]
         },
-        Dia: {
-          rich_text: [
-            {
-              text: {
-                content: slotData.dia
-              }
-            }
-          ]
-        },
+        // YA NO incluir campo "Dia" - se calcula automáticamente
         Estado: {
           select: {
             name: 'Disponible'

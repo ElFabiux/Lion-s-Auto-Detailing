@@ -77,16 +77,15 @@ const BookingForm = () => {
       const result = await response.json();
 
       if (result.success) {
-        // Mostrar mensaje de éxito
-        alert('¡Cita agendada exitosamente! Te contactaremos pronto para confirmar los detalles.');
-        
-        // Redirigir al inicio
-        window.location.href = '/';
+        // Ya no mostramos alert aquí - el ConfirmationStep maneja el éxito
+        console.log('✅ Cita agendada exitosamente');
+        // El ConfirmationStep mostrará el CustomSuccessAlert
       } else {
         throw new Error(result.error || 'Error al agendar la cita');
       }
     } catch (error) {
       console.error('Error al enviar formulario:', error);
+      // Solo mostrar alert para errores
       alert(`Error: ${error.message}`);
     } finally {
       setIsSubmitting(false);

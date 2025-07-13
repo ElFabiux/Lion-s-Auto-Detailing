@@ -1,4 +1,4 @@
-// app/api/book-appointment/route.js - Versión simplificada
+// app/api/book-appointment/route.js - Versión sin alert nativo
 import { bookSlot } from '@/lib/notion-availability';
 
 export async function POST(request) {
