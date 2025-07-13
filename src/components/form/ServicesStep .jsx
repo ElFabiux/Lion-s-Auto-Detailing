@@ -37,7 +37,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
       name: "BRONCE",
       subtitle: "Mantenimiento Para Cerámico",
       icon: Award,
-      prices: { sedan: 30000, suv: 35000, "4x4": 40000 },
+      prices: { sedan: 25000, suv: 30000, "4x4": 35000 },
       color: "from-amber-600 to-amber-800",
       highlights: [
         "Sistema de filtración anti-gota seca",
@@ -52,7 +52,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
       name: "PLATA",
       subtitle: "Limpieza Profunda",
       icon: Star,
-      prices: { sedan: 85000, suv: 95000, "4x4": 105000 },
+      prices: { sedan: 45000, suv: 50000, "4x4": 55000 },
       color: "from-gray-400 to-gray-600",
       highlights: [
         "Limpieza de techo completa",
@@ -67,7 +67,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
       name: "ORO",
       subtitle: "Abrillantado UNO Protect",
       icon: Crown,
-      prices: { sedan: 155000, suv: 175000, "4x4": 195000 },
+      prices: { sedan: 60000, suv: 70000, "4x4": 80000 },
       color: "from-yellow-300 to-yellow-500",
       highlights: [
         "Solo pintura - Especializado",
@@ -82,7 +82,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
       name: "DIAMANTE",
       subtitle: "Tratamiento Cerámico Completo",
       icon: Gem,
-      prices: { sedan: 200000, suv: 230000, "4x4": 260000 },
+      prices: { sedan: 250000, suv: 300000, "4x4": 350000 },
       color: "from-blue-400 to-purple-600",
       highlights: [
         "Protección duradera",

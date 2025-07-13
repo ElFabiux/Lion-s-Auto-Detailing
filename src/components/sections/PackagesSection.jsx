@@ -36,11 +36,11 @@ const PackagesSection = () => {
       id: 1,
       name: "BRONCE",
       subtitle: "Mantenimiento Para Cerámico",
-      basePrice: 30000,
+      basePrice: 25000,
       prices: {
-        sedan: 30000,
-        suv: 35000,
-        "4x4": 40000
+        sedan: 25000,
+        suv: 30000,
+        "4x4": 35000
       },
       icon: Award,
       featured: false,
@@ -58,11 +58,11 @@ const PackagesSection = () => {
       id: 2,
       name: "PLATA",
       subtitle: "Limpieza Profunda",
-      basePrice: 85000,
+      basePrice: 45000,
       prices: {
-        sedan: 85000,
-        suv: 95000,
-        "4x4": 105000
+        sedan: 45000,
+        suv: 50000,
+        "4x4": 55000
       },
       icon: Star,
       featured: false,
@@ -80,11 +80,11 @@ const PackagesSection = () => {
       id: 3,
       name: "ORO",
       subtitle: "Abrillantado UNO Protect",
-      basePrice: 155000,
+      basePrice: 60000,
       prices: {
-        sedan: 155000,
-        suv: 175000,
-        "4x4": 195000
+        sedan: 60000,
+        suv: 70000,
+        "4x4": 80000
       },
       icon: Crown,
       featured: true,
@@ -102,11 +102,11 @@ const PackagesSection = () => {
       id: 4,
       name: "DIAMANTE",
       subtitle: "Tratamiento Cerámico Completo",
-      basePrice: 200000,
+      basePrice: 250000,
       prices: {
-        sedan: 200000,
-        suv: 230000,
-        "4x4": 260000
+        sedan: 250000,
+        suv: 300000,
+        "4x4": 350000
       },
       icon: Gem,
       featured: false,
