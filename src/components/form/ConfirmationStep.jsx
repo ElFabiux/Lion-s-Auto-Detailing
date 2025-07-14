@@ -50,7 +50,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
       // Preparar datos para el alert
       const selectedVehicle = formData.services.selectedVehicle || "sedan";
       const packagePrice = formData.services.selectedPackage.prices[selectedVehicle];
-      
+
       const vehicleNames = {
         sedan: "Sedán",
         suv: "SUV",
@@ -135,9 +135,8 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   return (
     <>
       <div
-        className={`transition-all duration-700 h-full flex items-center justify-center ${
-          isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`transition-all duration-700 h-full flex items-center justify-center ${isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
         {/* Container responsive - móvil: full height, desktop: tamaño fijo centrado */}
         <div className="w-full h-full lg:h-auto lg:max-h-[85vh] lg:w-[900px] lg:max-w-4xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden min-w-0">
@@ -270,7 +269,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                       <p className="text-white/60 text-xs sm:text-sm">Precio para {vehicleNames[selectedVehicle]}</p>
                     </div>
                   </div>
-                  
+
                   {/* Package highlights */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
                     {formData.services.selectedPackage.highlights.map((highlight, index) => (
@@ -287,8 +286,8 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
               {formData.services.additionalMessage && (
                 <div className="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <div className="p-1.5 sm:p-2 bg-green-500/20 rounded-lg">
-                      <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+                    <div className="p-1.5 sm:p-2 bg-orange-500/20 rounded-lg">
+                      <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                     </div>
                     <h4 className="text-base sm:text-lg font-semibold text-white">
                       <span className="hidden sm:inline">Mensaje Adicional</span>
@@ -352,8 +351,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                       <span className="sm:hidden">Importante</span>
                     </h5>
                     <p className="text-white/80 text-xs sm:text-sm leading-relaxed">
-                      Al confirmar esta cita, recibirá un mensaje de confirmación
-                      por WhatsApp y correo electrónico. Nos comunicaremos con
+                      Nos comunicaremos con
                       usted 24 horas antes de la cita para confirmar los detalles
                       finales.
                     </p>
@@ -390,11 +388,10 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`group flex items-center justify-center gap-2 px-4 py-3 sm:px-8 sm:py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg min-w-[48px] sm:min-w-auto ${
-                  isSubmitting
-                    ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                    : "bg-green-500 hover:bg-green-600 text-white hover:shadow-xl hover:shadow-green-500/25"
-                }`}
+                className={`group flex items-center justify-center gap-2 px-4 py-3 sm:px-8 sm:py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg min-w-[48px] sm:min-w-auto ${isSubmitting
+                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600 text-white hover:shadow-xl hover:shadow-green-500/25"
+                  }`}
               >
                 {isSubmitting ? (
                   <>
