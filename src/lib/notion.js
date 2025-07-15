@@ -1,4 +1,4 @@
-// lib/notion.js
+// lib/notion.js - Con función getSlotById agregada
 // Funciones simplificadas para UNA SOLA base de datos
 
 import { Client } from '@notionhq/client';
@@ -17,6 +17,44 @@ function calculateDayOfWeek(isoDate) {
   const date = new Date(isoDate + 'T00:00:00');
   const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   return days[date.getDay()];
+}
+
+/**
+ * NUEVA FUNCIÓN: Obtener un slot específico por ID para verificar su estado
+ */
+export async function getSlotById(slotId) {
+  try {
+    if (!DATABASE_ID) {
+      throw new Error('NOTION_DATABASE_AVAILABILITY_ID no está configurado');
+    }
+    
+    const response = await notion.pages.retrieve({
+      page_id: slotId
+    });
+
+    const fecha = response.properties.Fecha?.date?.start || '';
+    
+    const slotData = {
+      id: response.id,
+      fecha: fecha,
+      hora: response.properties.Hora?.rich_text?.[0]?.plain_text || '',
+      dia: fecha ? calculateDayOfWeek(fecha) : '',
+      estado: response.properties.Estado?.select?.name || ''
+    };
+
+    console.log(`🔍 Slot verificado: ${slotData.fecha} ${slotData.hora} - Estado: ${slotData.estado}`);
+
+    return {
+      success: true,
+      data: slotData
+    };
+  } catch (error) {
+    console.error('Error al obtener slot por ID:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
 }
 
 /**

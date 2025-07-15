@@ -1,5 +1,5 @@
-// app/api/book-appointment/route.js - Versión simplificada
-import { bookSlot } from '@/lib/notion';
+// app/api/book-appointment/route.js - Con verificación de disponibilidad
+import { bookSlot, getSlotById } from '@/lib/notion';
 
 export async function POST(request) {
   try {
@@ -33,7 +33,36 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    console.log('📝 Agendando cita en slot:', slotId);
+    console.log('📝 Verificando disponibilidad del slot:', slotId);
+    
+    // NUEVA VERIFICACIÓN: Comprobar si el slot sigue disponible
+    const slotCheck = await getSlotById(slotId);
+    
+    if (!slotCheck.success) {
+      console.error('❌ Error al verificar slot:', slotCheck.error);
+      return Response.json({
+        success: false,
+        error: 'Error al verificar la disponibilidad del horario',
+        code: 'VERIFICATION_ERROR'
+      }, { status: 500 });
+    }
+
+    // Verificar si el slot ya fue ocupado
+    if (slotCheck.data.estado !== 'Disponible') {
+      console.warn('⚠️ Slot ya ocupado:', slotId);
+      return Response.json({
+        success: false,
+        error: 'La cita seleccionada ya fue ocupada por otro cliente',
+        code: 'SLOT_UNAVAILABLE',
+        slotData: {
+          fecha: slotCheck.data.fecha,
+          hora: slotCheck.data.hora,
+          estado: slotCheck.data.estado
+        }
+      }, { status: 409 }); // 409 Conflict
+    }
+
+    console.log('✅ Slot disponible, procediendo con el agendamiento');
     
     const result = await bookSlot(slotId, personalInfo, services);
     
@@ -57,7 +86,8 @@ export async function POST(request) {
       
       return Response.json({
         success: false,
-        error: result.error
+        error: result.error,
+        code: 'BOOKING_ERROR'
       }, { status: 500 });
     }
     
@@ -67,13 +97,14 @@ export async function POST(request) {
       success: false,
       error: 'Error interno del servidor',
       details: error.message,
+      code: 'INTERNAL_ERROR',
       suggestion: 'Verifica que NOTION_DATABASE_AVAILABILITY_ID esté configurado correctamente'
     }, { status: 500 });
   }
 }
 
-// // app/api/book-appointment/route.js - Versión sin alert nativo
-// import { bookSlot } from '@/lib/notion-availability';
+// // app/api/book-appointment/route.js - Versión simplificada
+// import { bookSlot } from '@/lib/notion';
 
 // export async function POST(request) {
 //   try {
@@ -109,7 +140,6 @@ export async function POST(request) {
 
 //     console.log('📝 Agendando cita en slot:', slotId);
     
-//     // Agendar la cita - actualiza el slot con toda la información
 //     const result = await bookSlot(slotId, personalInfo, services);
     
 //     if (result.success) {

@@ -92,45 +92,44 @@ const BookingForm = () => {
     window.location.href = '/';
   };
 
+  // Función simplificada para enviar el formulario
+  // El manejo de respuesta (éxito/error) se hace en ConfirmationStep
   const submitForm = async () => {
-    try {
-      setIsSubmitting(true);
-
-      // Validar que tenemos todos los datos necesarios
-      if (!formData.dateTime.slotId || !formData.personalInfo.name || !formData.services.selectedPackage) {
-        throw new Error('Datos incompletos para agendar la cita');
-      }
-
-      // Enviar datos a la API
-      const response = await fetch('/api/book-appointment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          slotId: formData.dateTime.slotId,
-          personalInfo: formData.personalInfo,
-          services: formData.services,
-          dateTime: formData.dateTime
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        // Ya no mostramos alert aquí - el ConfirmationStep maneja el éxito
-        console.log('✅ Cita agendada exitosamente');
-        // El ConfirmationStep mostrará el CustomSuccessAlert
-      } else {
-        throw new Error(result.error || 'Error al agendar la cita');
-      }
-    } catch (error) {
-      console.error('Error al enviar formulario:', error);
-      // Solo mostrar alert para errores
-      alert(`Error: ${error.message}`);
-    } finally {
-      setIsSubmitting(false);
+    console.log('📝 BookingForm: Iniciando envío de formulario...');
+    
+    // Validar que tenemos todos los datos necesarios
+    if (!formData.dateTime.slotId || !formData.personalInfo.name || !formData.services.selectedPackage) {
+      throw new Error('Datos incompletos para agendar la cita');
     }
+
+    console.log('✅ BookingForm: Datos validados, enviando a API...');
+    
+    // Enviar datos a la API
+    const response = await fetch('/api/book-appointment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        slotId: formData.dateTime.slotId,
+        personalInfo: formData.personalInfo,
+        services: formData.services,
+        dateTime: formData.dateTime
+      }),
+    });
+
+    const result = await response.json();
+    console.log('📡 BookingForm: Respuesta recibida:', result);
+
+    // Si hay error, lanzar excepción para que ConfirmationStep lo maneje
+    if (!result.success) {
+      const error = new Error(result.error || 'Error al agendar la cita');
+      error.code = result.code; // Preservar el código de error
+      error.slotData = result.slotData; // Preservar datos del slot si están disponibles
+      throw error;
+    }
+
+    return result;
   };
 
   const renderStep = () => {

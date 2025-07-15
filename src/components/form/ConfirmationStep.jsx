@@ -20,12 +20,15 @@ import {
   OctagonAlert,
 } from "lucide-react";
 import CustomSuccessAlert from '../ui/CustomSuccessAlert';
+import CustomUnavailableAlert from "../ui/CustomUnavailableAlert";
 
 const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showUnavailableAlert, setShowUnavailableAlert] = useState(false);
   const [appointmentData, setAppointmentData] = useState(null);
+  const [unavailableSlotData, setUnavailableSlotData] = useState(null);
 
   useEffect(() => {
     setIsAnimating(true);
@@ -44,44 +47,88 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
     setIsSubmitting(true);
 
     try {
-      // Llamar la función onSubmit original (que hace la petición a la API)
-      await onSubmit();
+      console.log('🚀 Enviando solicitud de agendamiento...');
+      
+      // Hacer la petición a la API
+      const response = await fetch('/api/book-appointment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          slotId: formData.dateTime.slotId,
+          personalInfo: formData.personalInfo,
+          services: formData.services,
+          dateTime: formData.dateTime
+        }),
+      });
 
-      // Preparar datos para el alert
-      const selectedVehicle = formData.services.selectedVehicle || "sedan";
-      const packagePrice = formData.services.selectedPackage.prices[selectedVehicle];
+      const result = await response.json();
+      console.log('📡 Respuesta de la API:', result);
 
-      const vehicleNames = {
-        sedan: "Sedán",
-        suv: "SUV",
-        "4x4": "4x4",
-      };
+      if (result.success) {
+        // CASO 1: Éxito - Cita agendada correctamente
+        console.log('✅ Cita agendada exitosamente');
+        
+        const selectedVehicle = formData.services.selectedVehicle || "sedan";
+        const packagePrice = formData.services.selectedPackage.prices[selectedVehicle];
 
-      const appointmentDetails = {
-        client: formData.personalInfo.name,
-        date: formData.dateTime.selectedDate,
-        time: formData.dateTime.selectedTime,
-        package: formData.services.selectedPackage?.name,
-        vehicle: vehicleNames[selectedVehicle],
-        price: packagePrice
-      };
+        const vehicleNames = {
+          sedan: "Sedán",
+          suv: "SUV",
+          "4x4": "4x4",
+        };
 
-      setAppointmentData(appointmentDetails);
-      setShowSuccessAlert(true);
+        const appointmentDetails = {
+          client: formData.personalInfo.name,
+          date: formData.dateTime.selectedDate,
+          time: formData.dateTime.selectedTime,
+          package: formData.services.selectedPackage?.name,
+          vehicle: vehicleNames[selectedVehicle],
+          price: packagePrice
+        };
+
+        setAppointmentData(appointmentDetails);
+        setShowSuccessAlert(true);
+        
+      } else if (result.code === 'SLOT_UNAVAILABLE') {
+        // CASO 2: Slot no disponible - Otro usuario lo ocupó
+        console.warn('⚠️ Slot no disponible:', result.slotData);
+        
+        setUnavailableSlotData(result.slotData || {
+          fecha: formData.dateTime.selectedDate,
+          hora: formData.dateTime.selectedTime,
+          estado: 'Ocupado'
+        });
+        setShowUnavailableAlert(true);
+        
+      } else {
+        // CASO 3: Otros errores
+        throw new Error(result.error || 'Error al agendar la cita');
+      }
+      
     } catch (error) {
-      console.error('Error al enviar formulario:', error);
-      alert(`Error: ${error.message}`);
+      console.error('❌ Error al enviar formulario:', error);
+      
+      // Para errores de red u otros errores técnicos
+      alert(`Error de conexión: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleAlertClose = () => {
+  const handleSuccessAlertClose = () => {
     setShowSuccessAlert(false);
-    // Redirigir al inicio después de cerrar el alert
+    // Redirigir al inicio después de cerrar el alert de éxito
     setTimeout(() => {
       window.location.href = '/';
     }, 300);
+  };
+
+  const handleUnavailableAlertClose = () => {
+    setShowUnavailableAlert(false);
+    // NO redirigir - el usuario permanece en el formulario
+    // y puede navegar hacia atrás para seleccionar otra cita
   };
 
   const getDayName = (dateString) => {
@@ -396,7 +443,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    <span className="hidden sm:inline">ENVIANDO...</span>
+                    <span className="hidden sm:inline">VERIFICANDO...</span>
                   </>
                 ) : (
                   <>
@@ -480,8 +527,15 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
       {/* Custom Success Alert */}
       <CustomSuccessAlert
         isOpen={showSuccessAlert}
-        onClose={handleAlertClose}
+        onClose={handleSuccessAlertClose}
         appointmentData={appointmentData}
+      />
+
+      {/* Custom Unavailable Alert */}
+      <CustomUnavailableAlert
+        isOpen={showUnavailableAlert}
+        onClose={handleUnavailableAlertClose}
+        slotData={unavailableSlotData}
       />
     </>
   );
