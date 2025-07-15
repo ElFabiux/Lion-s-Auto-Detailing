@@ -192,10 +192,10 @@ const ContactSection = () => {
                       <Phone className="w-5 h-5 xs:w-6 xs:h-6 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-red-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
                       <div>
                         <a
-                          href="tel:+50612345678"
+                          href="tel:+50688275168"
                           className="text-gray-300 hover:text-red-orange-500 transition-colors duration-300 text-base xs:text-lg sm:text-base lg:text-lg xl:text-xl font-medium"
                         >
-                          +506 1234-5678
+                          +506 8827 5168
                         </a>
                       </div>
                     </div>
@@ -232,7 +232,7 @@ const ContactSection = () => {
 
                         {/* Instagram */}
                         <a
-                          href="https://instagram.com"
+                          href="https://www.instagram.com/lion_sautodetailing?igsh=OWVkdzU5cGI3bXI0"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-12 h-12 xs:w-14 xs:h-14 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-pink-500 to-orange-400 rounded-lg flex items-center justify-center text-white hover:from-pink-600 hover:to-orange-500 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl"
@@ -243,7 +243,7 @@ const ContactSection = () => {
 
                         {/* WhatsApp */}
                         <a
-                          href="https://wa.me/50612345678?text=Hola, me interesa información sobre sus servicios de detallado automotriz"
+                          href="https://wa.me/50688275168?text=Hola, me interesa información sobre sus servicios de detallado automotriz"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-12 h-12 xs:w-14 xs:h-14 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl"

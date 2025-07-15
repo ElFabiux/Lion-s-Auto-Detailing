@@ -10,6 +10,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [targetSection, setTargetSection] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isAutoScrolling = useRef(false);
   const lastScrollY = useRef(0);
   const scrollDirection = useRef('down');
@@ -26,6 +27,33 @@ const Navbar = () => {
   // Efecto para marcar cuando el componente está hidratado
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
+
+  // Detectar cuando se abre/cierra un modal
+  useEffect(() => {
+    const handleModalOpen = () => setIsModalOpen(true);
+    const handleModalClose = () => setIsModalOpen(false);
+
+    // Escuchar eventos personalizados para detectar modales
+    window.addEventListener('modalOpen', handleModalOpen);
+    window.addEventListener('modalClose', handleModalClose);
+
+    // También detectar por cambios en el body overflow (método alternativo)
+    const observer = new MutationObserver(() => {
+      const bodyOverflow = document.body.style.overflow;
+      setIsModalOpen(bodyOverflow === 'hidden');
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => {
+      window.removeEventListener('modalOpen', handleModalOpen);
+      window.removeEventListener('modalClose', handleModalClose);
+      observer.disconnect();
+    };
   }, []);
 
   // Detectar scroll para efecto del navbar
@@ -172,10 +200,14 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
       isScrolled 
-        ? 'bg-woodsmoke-950/95 backdrop-blur-md shadow-lg' 
+        ? 'bg-woodsmoke-950/90 backdrop-blur-md shadow-lg' 
         : 'bg-woodsmoke-950'
+    } ${
+      isModalOpen 
+        ? 'opacity-0 pointer-events-none' 
+        : 'opacity-100 pointer-events-auto'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">

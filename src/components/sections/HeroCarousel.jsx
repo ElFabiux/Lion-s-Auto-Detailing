@@ -68,7 +68,7 @@ const HeroCarousel = () => {
       window.location.href = '/agendar-cita';
     } else if (action === 'contact') {
       // Abrir WhatsApp (reemplaza con tu número)
-      window.open('https://wa.me/50612345678?text=Hola, me interesa el servicio de mantenimiento diario', '_blank');
+      window.open('https://wa.me/50688275168?text=Hola, me interesa el servicio de mantenimiento diario', '_blank');
     }
   };
 

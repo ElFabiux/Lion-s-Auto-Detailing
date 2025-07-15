@@ -95,11 +95,17 @@ const PackageCard = ({ pkg, index }) => {
     e.stopPropagation();
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    
+    // Emitir evento personalizado para que el navbar se oculte
+    window.dispatchEvent(new CustomEvent('modalOpen'));
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     document.body.style.overflow = 'unset'; // Restaurar scroll del body
+    
+    // Emitir evento personalizado para que el navbar aparezca
+    window.dispatchEvent(new CustomEvent('modalClose'));
   };
 
   return (
@@ -207,23 +213,23 @@ const PackageCard = ({ pkg, index }) => {
         <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
       </div>
 
-      {/* Modal */}
+      {/* Modal - Z-INDEX MÁXIMO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+          {/* Backdrop - Z-INDEX MUY ALTO */}
           <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-fadeIn"
+            className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fadeIn z-[99998]"
             onClick={closeModal}
           />
           
-          {/* Modal Content */}
-          <div className="relative bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-slideUp">
+          {/* Modal Content - Z-INDEX EL MÁS ALTO */}
+          <div className="relative bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-slideUp z-[99999]">
             
             {/* Header */}
             <div className={`p-6 bg-gradient-to-r ${pkg.color} relative`}>
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors duration-200 p-2 hover:bg-white/10 rounded-full"
+                className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors duration-200 p-2 hover:bg-white/10 rounded-full z-[100000]"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -333,6 +339,21 @@ const PackageCard = ({ pkg, index }) => {
         .animate-slideUp {
           animation: slideUp 0.4s ease-out;
         }
+
+        /* COMENTARIO: Jerarquía de z-index establecida:
+           - Modal container: z-[99999] (99999)
+           - Modal backdrop: z-[99998] (99998) 
+           - Modal content: z-[99999] (99999)
+           - Close button: z-[100000] (100000)
+           
+           Esto asegura que el modal esté por encima de:
+           - Navbar (z-50 = 50)
+           - Galería títulos (z-10 = 10)
+           - Cualquier otro elemento de la página
+           
+           NOTA: Usamos valores muy altos para garantizar que NUNCA 
+           haya conflictos con otros componentes
+        */
       `}</style>
     </>
   );

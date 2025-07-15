@@ -186,12 +186,12 @@ const GallerySection = () => {
         id="galeria"
         className="relative min-h-screen bg-white py-20"
       >
-        {/* Content */}
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8">
+        {/* Content - Z-INDEX REDUCIDO para estar por debajo de modales */}
+        <div className="relative z-0 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
+            {/* Header - Z-INDEX específico bajo */}
             <div
-              className={`text-center mb-16 transition-all duration-1000 delay-300 ${
+              className={`text-center mb-16 transition-all duration-1000 delay-300 relative z-0 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
@@ -206,9 +206,9 @@ const GallerySection = () => {
               </p>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs - Z-INDEX bajo */}
             <div
-              className={`flex justify-center mb-16 transition-all duration-1000 delay-500 ${
+              className={`flex justify-center mb-16 transition-all duration-1000 delay-500 relative z-0 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
@@ -245,10 +245,10 @@ const GallerySection = () => {
               </div>
             </div>
 
-            {/* Gallery Grid - Matriz uniforme */}
+            {/* Gallery Grid - Z-INDEX bajo */}
             <div
               key={activeTab}
-              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 ${
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 relative z-0 ${
                 isVisible ? "opacity-100" : "opacity-0"
               }`}
             >
@@ -301,22 +301,21 @@ const GallerySection = () => {
         </div>
       </section>
 
-      {/* Modal for full-size images */}
-
+      {/* Modal for full-size images - Z-INDEX MUY ALTO */}
       {selectedImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/90 backdrop-blur-sm animate-fadeIn"
+            className="absolute inset-0 bg-black/90 backdrop-blur-sm animate-fadeIn z-[99998]"
             onClick={closeModal}
           />
 
           {/* Modal Content */}
-          <div className="relative max-w-5xl w-full h-full flex items-center justify-center animate-modalSlideIn">
+          <div className="relative max-w-5xl w-full h-full flex items-center justify-center animate-modalSlideIn z-[99999]">
             {/* Close button */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 z-10 text-white hover:text-red-orange-500 transition-colors duration-200 p-3 bg-black/50 rounded-full backdrop-blur-sm"
+              className="absolute top-4 right-4 z-[100000] text-white hover:text-red-orange-500 transition-colors duration-200 p-3 bg-black/50 rounded-full backdrop-blur-sm"
             >
               <X className="w-6 h-6" />
             </button>
@@ -324,14 +323,14 @@ const GallerySection = () => {
             {/* Navigation buttons */}
             <button
               onClick={prevImage}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:text-red-orange-500 transition-colors duration-200 p-3 bg-black/50 rounded-full backdrop-blur-sm"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-[100000] text-white hover:text-red-orange-500 transition-colors duration-200 p-3 bg-black/50 rounded-full backdrop-blur-sm"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
 
             <button
               onClick={nextImage}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:text-red-orange-500 transition-colors duration-200 p-3 bg-black/50 rounded-full backdrop-blur-sm"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-[100000] text-white hover:text-red-orange-500 transition-colors duration-200 p-3 bg-black/50 rounded-full backdrop-blur-sm"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -412,6 +411,15 @@ const GallerySection = () => {
         .animate-modalSlideIn {
           animation: modalSlideIn 0.4s ease-out;
         }
+
+        /* COMENTARIO: Z-index jerarquía para evitar conflictos:
+           - Contenido de galería: z-0 (0)
+           - Modal de galería: z-[99999] (99999)
+           - Controles del modal: z-[100000] (100000)
+           
+           Esto asegura que los modales de galería también estén
+           por encima del navbar y títulos de sección.
+        */
       `}</style>
     </>
   );
