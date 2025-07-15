@@ -35,15 +35,56 @@ const BookingForm = () => {
     }));
   };
 
+  // Función mejorada para manejar el scroll y transición entre pasos
+  const scrollToTop = () => {
+    // Scroll de la ventana principal
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant'
+    });
+    
+    // Scroll del contenedor móvil/tablet (si existe)
+    const mobileContainer = document.querySelector('.lg\\:hidden .overflow-y-auto');
+    if (mobileContainer) {
+      mobileContainer.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+      });
+    }
+    
+    // Scroll del contenedor desktop (si existe)
+    const desktopContainer = document.querySelector('.lg\\:flex .overflow-y-auto');
+    if (desktopContainer) {
+      desktopContainer.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+      });
+    }
+  };
+
   const nextStep = () => {
     if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+      // Primero hacer scroll al top
+      scrollToTop();
+      
+      // Luego cambiar el paso (con un pequeño delay para asegurar el scroll)
+      setTimeout(() => {
+        setCurrentStep(currentStep + 1);
+      }, 50);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      // Hacer scroll al top también al retroceder
+      scrollToTop();
+      
+      setTimeout(() => {
+        setCurrentStep(currentStep - 1);
+      }, 50);
     }
   };
 

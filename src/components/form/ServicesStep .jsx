@@ -139,8 +139,27 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
     });
   };
 
+  // NUEVO: Función para manejar el siguiente paso con scroll al top
   const handleNext = () => {
     if (selectedPackage) {
+      // Hacer scroll instantáneo al top de la página
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+      });
+      
+      // También hacer scroll al top del contenedor principal si existe
+      const mainContainer = document.querySelector('.overflow-y-auto');
+      if (mainContainer) {
+        mainContainer.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'instant'
+        });
+      }
+      
+      // Llamar onNext después del scroll
       onNext();
     }
   };
