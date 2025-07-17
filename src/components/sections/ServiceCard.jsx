@@ -1,9 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 const ServiceCard = ({ service }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Mapeo de nombres de archivos por ID de servicio
+  const getServiceIconPath = (serviceId) => {
+    const iconMap = {
+      1: 'ppf.png',                    // PPF
+      2: 'pulido-parabrisas.png',     // Pulido de Parabrisas
+      3: 'correccion-pintura.png',    // Corrección de Pintura
+      4: 'tapiceria.png',             // Tapicería
+      5: 'pulido-faros.png',          // Pulido de Faros
+      6: 'ceramico.png'               // Aplicación de Cerámico
+    };
+    
+    return `/service-icons/${iconMap[serviceId] || 'ppf.png'}`;
+  };
 
   return (
     <div 
@@ -17,12 +32,21 @@ const ServiceCard = ({ service }) => {
                       transition-all duration-300 hover:shadow-xl border border-white-200">
         
         {/* Icon Container */}
-        <div className={`mb-6 p-4 rounded-full transition-all duration-300 ${
-          isHovered ? 'bg-red-orange-500 text-white-50' : 'bg-white-200 text-woodsmoke-950'
+        <div className={`mb-6 p-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+          isHovered ? 'bg-red-orange-500' : 'bg-white-200'
         }`}>
-          <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
-          </svg>
+          <div className="relative w-16 h-16 flex items-center justify-center">
+            <Image
+              src={getServiceIconPath(service.id)}
+              alt={`Icono de ${service.title}`}
+              width={64}
+              height={64}
+              className={`object-contain transition-all duration-300 ${
+                isHovered ? 'brightness-0 invert' : ''
+              }`}
+              priority={service.id <= 3} // Prioridad para los primeros 3 iconos
+            />
+          </div>
         </div>
 
         {/* Title */}

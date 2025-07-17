@@ -6,18 +6,18 @@ const ServicesSection = () => {
   const services = [
     {
       id: 1,
-      title: "LAVADO EXTERIOR",
-      description: "Limpieza profunda del exterior de tu vehículo, incluyendo carrocería, llantas y vidrios, utilizando productos especializados para eliminar suciedad y proteger la pintura."
+      title: "PPF",
+      description: "Lámina protectora invisible que se adhiere perfectamente a las partes más vulnerables de tu auto como manijas, bordes de puertas, faros y pantallas. Funciona como un escudo transparente que previene rayones, golpes menores y el desgaste del uso diario, manteniendo tu vehículo como nuevo."
     },
     {
       id: 2,
-      title: "LAVADO DE MOTOR",
-      description: "Limpieza segura y detallada del compartimento del motor, retirando grasa, polvo y residuos para mejorar su funcionamiento y apariencia."
+      title: "PULIDO DE PARABRISAS",
+      description: "Restauración profesional de parabrisa. Eliminamos rayones menores, marcas de limpiaparabrisas, gota seca y pequeñas astillas para mejorar la visibilidad y claridad del vidrio, evitando costosos reemplazos y garantizando una conducción más segura."
     },
     {
       id: 3,
-      title: "LIMPIEZA INTERIOR",
-      description: "Aspirado, limpieza de superficies y tratamiento de tapicería para eliminar manchas, olores y dejar el interior de tu auto como nuevo."
+      title: "CORRECCIÓN DE PINTURA",
+      description: "Eliminación profesional de rayones, remolinos y defectos de la pintura. Restauramos el brillo original y preparamos la superficie para tratamientos de protección de larga duración."
     },
     {
       id: 4,
