@@ -15,7 +15,7 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
       setTimeout(() => setIsAnimating(true), 50);
       // Prevenir scroll del body
       document.body.style.overflow = "hidden";
-      
+
       // Inicializar countdown
       setCountdown(5);
     } else {
@@ -98,7 +98,7 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
           >
             Otro usuario está procesando esta cita
           </p>
-          
+
           {/* Processing Information */}
           <div
             className="bg-black/30 rounded-lg p-4 mb-4 animate-fade-in-up"
@@ -116,7 +116,7 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
                 </div>
               )}
             </div>
-            
+
             {/* Countdown display */}
             <div className="text-center mb-3">
               <div className="text-lg font-bold text-white">
@@ -126,10 +126,10 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
                 Tiempo sugerido de espera
               </div>
             </div>
-            
+
             {/* Progress bar */}
             <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-              <div 
+              <div
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 h-full rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${getProgressPercentage()}%` }}
               />
@@ -140,7 +140,8 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
             className="text-white/80 text-sm leading-relaxed animate-fade-in-up"
             style={{ animationDelay: "0.5s" }}
           >
-            Por favor espere unos segundos e intente nuevamente. Si el problema persiste, seleccione otra cita.
+            Por favor espere unos segundos e intente nuevamente. Si el problema
+            persiste, seleccione otra cita.
           </p>
         </div>
 
@@ -159,10 +160,15 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
                   : "bg-blue-500 hover:bg-blue-600 text-white hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl hover:shadow-blue-500/25"
               }`}
             >
-              <X className={`w-4 h-4 ${countdown > 0 ? "" : "group-hover:rotate-180 transition-transform duration-300"}`} />
+              <X
+                className={`w-4 h-4 ${
+                  countdown > 0
+                    ? ""
+                    : "group-hover:rotate-180 transition-transform duration-300"
+                }`}
+              />
               {countdown > 0 ? `Esperar ${countdown}s` : "Intentar de nuevo"}
             </button>
-          
           </div>
         </div>
 
@@ -198,7 +204,8 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
         }
 
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0px) translateX(0px);
             opacity: 0.3;
           }
@@ -209,7 +216,8 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
         }
 
         @keyframes float-delayed {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0px) translateX(0px);
             opacity: 0.2;
           }
