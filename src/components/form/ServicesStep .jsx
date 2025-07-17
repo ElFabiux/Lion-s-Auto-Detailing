@@ -435,7 +435,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
               {/* Nota informativa */}
               <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg">
                 <div className="flex items-start gap-3">
-                  <MessageSquare className="w-5 h-5 text-purple-400 mt-0.5 flex-shrink-0" />
+                  <MessageSquarePlus className="w-5 h-5 text-purple-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <h6 className="text-white font-medium text-sm mb-1">
                       ¿Cómo funciona?
