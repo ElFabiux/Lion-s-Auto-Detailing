@@ -49,6 +49,15 @@ const ContactSection = () => {
     { name: "Galería", href: "#galeria", icon: ImageIcon, id: "galeria" },
   ];
 
+  const contactMessage = encodeURIComponent(
+    `¡Hola!\n` +
+      `*Información de mi vehículo:*\n` +
+      `• Marca: \n` +
+      `• Modelo: \n` +
+      `• Año: \n` +
+      `Me quería contactar directamente con ustedes para...`
+  );
+
   // Función de scroll que NO interfiere con el navbar
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -243,7 +252,7 @@ const ContactSection = () => {
 
                         {/* WhatsApp */}
                         <a
-                          href="https://wa.me/50688275168?text=Hola, me interesa información sobre sus servicios de detallado automotriz"
+                          href={`https://wa.me/50688275168?text=${contactMessage}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-12 h-12 xs:w-14 xs:h-14 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl"
