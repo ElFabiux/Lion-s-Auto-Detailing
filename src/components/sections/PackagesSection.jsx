@@ -111,7 +111,7 @@ const PackagesSection = () => {
       icon: Gem,
       featured: false,
       highlights: [
-        "Protección hasta duradera",
+        "Protección duradera",
         "Revestimiento cerámico alta resistencia",
         "Tratamiento cerámico para vidrios",
         "Brillo intenso efecto espejo",
