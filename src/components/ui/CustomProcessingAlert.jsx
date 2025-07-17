@@ -159,16 +159,10 @@ const CustomProcessingAlert = ({ isOpen, onClose, lockedFor = 0 }) => {
                   : "bg-blue-500 hover:bg-blue-600 text-white hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl hover:shadow-blue-500/25"
               }`}
             >
-              <RefreshCw className={`w-4 h-4 ${countdown > 0 ? "" : "group-hover:rotate-180 transition-transform duration-300"}`} />
+              <X className={`w-4 h-4 ${countdown > 0 ? "" : "group-hover:rotate-180 transition-transform duration-300"}`} />
               {countdown > 0 ? `Esperar ${countdown}s` : "Intentar de nuevo"}
             </button>
-            
-            <button
-              onClick={onClose}
-              className="px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-sm"
-            >
-              <X className="w-4 h-4" />
-            </button>
+          
           </div>
         </div>
 
