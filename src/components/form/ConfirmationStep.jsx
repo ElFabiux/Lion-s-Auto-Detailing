@@ -19,16 +19,19 @@ import {
   ThumbsUp,
   OctagonAlert,
 } from "lucide-react";
-import CustomSuccessAlert from '../ui/CustomSuccessAlert';
+import CustomSuccessAlert from "../ui/CustomSuccessAlert";
 import CustomUnavailableAlert from "../ui/CustomUnavailableAlert";
+import CustomProcessingAlert from "../ui/CustomProcessingAlert"; // NUEVA IMPORTACIÓN
 
 const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showUnavailableAlert, setShowUnavailableAlert] = useState(false);
+  const [showProcessingAlert, setShowProcessingAlert] = useState(false); // NUEVO STATE
   const [appointmentData, setAppointmentData] = useState(null);
   const [unavailableSlotData, setUnavailableSlotData] = useState(null);
+  const [processingData, setProcessingData] = useState({ lockedFor: 0 }); // NUEVO STATE
 
   useEffect(() => {
     setIsAnimating(true);
@@ -47,31 +50,31 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
     setIsSubmitting(true);
 
     try {
-      console.log('🚀 Enviando solicitud de agendamiento...');
-      
-      // Hacer la petición a la API
-      const response = await fetch('/api/book-appointment', {
-        method: 'POST',
+      console.log("🚀 Enviando solicitud de agendamiento...");
+
+      const response = await fetch("/api/book-appointment", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           slotId: formData.dateTime.slotId,
           personalInfo: formData.personalInfo,
           services: formData.services,
-          dateTime: formData.dateTime
+          dateTime: formData.dateTime,
         }),
       });
 
       const result = await response.json();
-      console.log('📡 Respuesta de la API:', result);
+      console.log("📡 Respuesta de la API:", result);
 
       if (result.success) {
         // CASO 1: Éxito - Cita agendada correctamente
-        console.log('✅ Cita agendada exitosamente');
-        
+        console.log("✅ Cita agendada exitosamente");
+
         const selectedVehicle = formData.services.selectedVehicle || "sedan";
-        const packagePrice = formData.services.selectedPackage.prices[selectedVehicle];
+        const packagePrice =
+          formData.services.selectedPackage.prices[selectedVehicle];
 
         const vehicleNames = {
           sedan: "Sedán",
@@ -85,33 +88,54 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
           time: formData.dateTime.selectedTime,
           package: formData.services.selectedPackage?.name,
           vehicle: vehicleNames[selectedVehicle],
-          price: packagePrice
+          price: packagePrice,
         };
 
         setAppointmentData(appointmentDetails);
         setShowSuccessAlert(true);
-        
-      } else if (result.code === 'SLOT_UNAVAILABLE') {
+      } else if (result.code === "SLOT_UNAVAILABLE") {
         // CASO 2: Slot no disponible - Otro usuario lo ocupó
-        console.warn('⚠️ Slot no disponible:', result.slotData);
-        
-        setUnavailableSlotData(result.slotData || {
-          fecha: formData.dateTime.selectedDate,
-          hora: formData.dateTime.selectedTime,
-          estado: 'Ocupado'
-        });
+        console.warn("⚠️ Slot no disponible:", result.slotData);
+
+        setUnavailableSlotData(
+          result.slotData || {
+            fecha: formData.dateTime.selectedDate,
+            hora: formData.dateTime.selectedTime,
+            estado: "Ocupado",
+          }
+        );
         setShowUnavailableAlert(true);
-        
+      } else if (result.code === "SLOT_BEING_PROCESSED") {
+        // CASO 3: Slot siendo procesado - NUEVA VENTANA FLOTANTE
+        console.warn("⚠️ Slot siendo procesado por otro usuario");
+
+        setProcessingData({
+          lockedFor: result.lockedFor || 0,
+        });
+        setShowProcessingAlert(true);
+      } else if (result.code === "RATE_LIMIT_EXCEEDED") {
+        // CASO 4: Rate limit excedido
+        console.warn("⚠️ Rate limit excedido");
+
+        const retryAfter = result.retryAfter || 60;
+        alert(
+          `Has realizado demasiadas solicitudes. Por favor espera ${retryAfter} segundos antes de intentar nuevamente.`
+        );
       } else {
-        // CASO 3: Otros errores
-        throw new Error(result.error || 'Error al agendar la cita');
+        // CASO 5: Otros errores
+        throw new Error(result.error || "Error al agendar la cita");
       }
-      
     } catch (error) {
-      console.error('❌ Error al enviar formulario:', error);
-      
-      // Para errores de red u otros errores técnicos
-      alert(`Error de conexión: ${error.message}`);
+      console.error("❌ Error al enviar formulario:", error);
+
+      // Manejar errores de red específicos
+      if (error.name === "TypeError" && error.message.includes("fetch")) {
+        alert(
+          "Error de conexión. Verifica tu conexión a internet e intenta nuevamente."
+        );
+      } else {
+        alert(`Error: ${error.message}`);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -121,14 +145,19 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
     setShowSuccessAlert(false);
     // Redirigir al inicio después de cerrar el alert de éxito
     setTimeout(() => {
-      window.location.href = '/';
+      window.location.href = "/";
     }, 300);
   };
 
   const handleUnavailableAlertClose = () => {
     setShowUnavailableAlert(false);
     // NO redirigir - el usuario permanece en el formulario
-    // y puede navegar hacia atrás para seleccionar otra cita
+  };
+
+  // NUEVA FUNCIÓN: Manejar cierre del alert de procesamiento
+  const handleProcessingAlertClose = () => {
+    setShowProcessingAlert(false);
+    // Permitir que el usuario intente de nuevo
   };
 
   const getDayName = (dateString) => {
@@ -182,8 +211,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   return (
     <>
       <div
-        className={`transition-all duration-700 h-full flex items-center justify-center ${isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        className={`transition-all duration-700 h-full flex items-center justify-center ${
+          isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
       >
         {/* Container responsive - móvil: full height, desktop: tamaño fijo centrado */}
         <div className="w-full h-full lg:h-auto lg:max-h-[85vh] lg:w-[900px] lg:max-w-4xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden min-w-0">
@@ -209,7 +239,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                     <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
                   </div>
                   <h4 className="text-base sm:text-lg font-semibold text-white">
-                    <span className="hidden sm:inline">Información Personal</span>
+                    <span className="hidden sm:inline">
+                      Información Personal
+                    </span>
                     <span className="sm:hidden">Datos Personales</span>
                   </h4>
                 </div>
@@ -294,37 +326,51 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                     <Package className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
                   </div>
                   <h4 className="text-base sm:text-lg font-semibold text-white">
-                    <span className="hidden sm:inline">Paquete Seleccionado</span>
+                    <span className="hidden sm:inline">
+                      Paquete Seleccionado
+                    </span>
                     <span className="sm:hidden">Paquete</span>
                   </h4>
                 </div>
                 <div className="bg-black/20 rounded-lg p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-3">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <div className={`p-2 sm:p-3 rounded-full bg-gradient-to-r ${formData.services.selectedPackage.color}`}>
+                      <div
+                        className={`p-2 sm:p-3 rounded-full bg-gradient-to-r ${formData.services.selectedPackage.color}`}
+                      >
                         <formData.services.selectedPackage.icon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <div>
-                        <h5 className="text-lg sm:text-xl font-bold text-white">{formData.services.selectedPackage.name}</h5>
-                        <p className="text-white/60 text-xs sm:text-sm">{formData.services.selectedPackage.subtitle}</p>
+                        <h5 className="text-lg sm:text-xl font-bold text-white">
+                          {formData.services.selectedPackage.name}
+                        </h5>
+                        <p className="text-white/60 text-xs sm:text-sm">
+                          {formData.services.selectedPackage.subtitle}
+                        </p>
                       </div>
                     </div>
                     <div className="text-left sm:text-right">
                       <p className="text-xl sm:text-2xl font-bold text-red-orange-500">
                         {formatPrice(packagePrice)}
                       </p>
-                      <p className="text-white/60 text-xs sm:text-sm">Precio para {vehicleNames[selectedVehicle]}</p>
+                      <p className="text-white/60 text-xs sm:text-sm">
+                        Precio para {vehicleNames[selectedVehicle]}
+                      </p>
                     </div>
                   </div>
 
                   {/* Package highlights */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
-                    {formData.services.selectedPackage.highlights.map((highlight, index) => (
-                      <div key={index} className="flex items-start gap-2">
-                        <CircleCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-white/80 text-xs sm:text-sm leading-tight">{highlight}</span>
-                      </div>
-                    ))}
+                    {formData.services.selectedPackage.highlights.map(
+                      (highlight, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <CircleCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-white/80 text-xs sm:text-sm leading-tight">
+                            {highlight}
+                          </span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -337,7 +383,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                       <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                     </div>
                     <h4 className="text-base sm:text-lg font-semibold text-white">
-                      <span className="hidden sm:inline">Mensaje Adicional</span>
+                      <span className="hidden sm:inline">
+                        Mensaje Adicional
+                      </span>
                       <span className="sm:hidden">Mensaje</span>
                     </h4>
                   </div>
@@ -351,28 +399,44 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
 
               {/* Summary Box */}
               <div className="bg-gradient-to-r from-red-orange-500/20 to-red-orange-600/20 rounded-xl p-4 sm:p-6 border border-red-orange-500/30">
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 text-center">Resumen de la Cita</h4>
+                <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 text-center">
+                  Resumen de la Cita
+                </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <User className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
                     <div>
-                      <p className="text-white font-medium text-sm sm:text-base">{formData.personalInfo.name}</p>
-                      <p className="text-white/60 text-xs sm:text-sm">Cliente</p>
+                      <p className="text-white font-medium text-sm sm:text-base">
+                        {formData.personalInfo.name}
+                      </p>
+                      <p className="text-white/60 text-xs sm:text-sm">
+                        Cliente
+                      </p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
                     <CarFront className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
                     <div>
-                      <p className="text-white font-medium text-sm sm:text-base">{vehicleNames[selectedVehicle]}</p>
-                      <p className="text-white/60 text-xs sm:text-sm">Vehículo</p>
+                      <p className="text-white font-medium text-sm sm:text-base">
+                        {vehicleNames[selectedVehicle]}
+                      </p>
+                      <p className="text-white/60 text-xs sm:text-sm">
+                        Vehículo
+                      </p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
                     <CalendarCheck className="w-6 h-6 sm:w-8 sm:h-8 text-red-orange-500" />
                     <div>
-                      <p className="text-white font-medium text-sm sm:text-base">{formData.dateTime.selectedDate}</p>
-                      <p className="text-white font-medium text-sm sm:text-base">{formData.dateTime.selectedTime}</p>
-                      <p className="text-white/60 text-xs sm:text-sm">Fecha y Hora</p>
+                      <p className="text-white font-medium text-sm sm:text-base">
+                        {formData.dateTime.selectedDate}
+                      </p>
+                      <p className="text-white font-medium text-sm sm:text-base">
+                        {formData.dateTime.selectedTime}
+                      </p>
+                      <p className="text-white/60 text-xs sm:text-sm">
+                        Fecha y Hora
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -398,9 +462,8 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
                       <span className="sm:hidden">Importante</span>
                     </h5>
                     <p className="text-white/80 text-xs sm:text-sm leading-relaxed">
-                      Nos comunicaremos con
-                      usted 24 horas antes de la cita para confirmar los detalles
-                      finales.
+                      Nos comunicaremos con usted 24 horas antes de la cita para
+                      confirmar los detalles finales.
                     </p>
                   </div>
                 </div>
@@ -435,10 +498,11 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`group flex items-center justify-center gap-2 px-4 py-3 sm:px-8 sm:py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg min-w-[48px] sm:min-w-auto ${isSubmitting
-                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                  : "bg-green-500 hover:bg-green-600 text-white hover:shadow-xl hover:shadow-green-500/25"
-                  }`}
+                className={`group flex items-center justify-center gap-2 px-4 py-3 sm:px-8 sm:py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg min-w-[48px] sm:min-w-auto ${
+                  isSubmitting
+                    ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600 text-white hover:shadow-xl hover:shadow-green-500/25"
+                }`}
               >
                 {isSubmitting ? (
                   <>
@@ -536,6 +600,13 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
         isOpen={showUnavailableAlert}
         onClose={handleUnavailableAlertClose}
         slotData={unavailableSlotData}
+      />
+
+      {/*Custom Processing Alert */}
+      <CustomProcessingAlert
+        isOpen={showProcessingAlert}
+        onClose={handleProcessingAlertClose}
+        lockedFor={processingData.lockedFor}
       />
     </>
   );

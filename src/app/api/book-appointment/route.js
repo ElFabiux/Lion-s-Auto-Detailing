@@ -1,7 +1,8 @@
-// app/api/book-appointment/route.js - Con verificación de disponibilidad
+// app/api/book-appointment/route.js - Con rate limiting y bloqueo de slots
 import { bookSlot, getSlotById } from '@/lib/notion';
+import { withRateLimit, withReservationLock } from '@/lib/rate-limiter';
 
-export async function POST(request) {
+async function bookAppointmentHandler(request) {
   try {
     const body = await request.json();
     const { slotId, personalInfo, services, dateTime } = body;
@@ -35,7 +36,7 @@ export async function POST(request) {
 
     console.log('📝 Verificando disponibilidad del slot:', slotId);
     
-    // NUEVA VERIFICACIÓN: Comprobar si el slot sigue disponible
+    // Verificación de disponibilidad (con doble verificación para mayor seguridad)
     const slotCheck = await getSlotById(slotId);
     
     if (!slotCheck.success) {
@@ -59,10 +60,21 @@ export async function POST(request) {
           hora: slotCheck.data.hora,
           estado: slotCheck.data.estado
         }
-      }, { status: 409 }); // 409 Conflict
+      }, { status: 409 });
     }
 
     console.log('✅ Slot disponible, procediendo con el agendamiento');
+    
+    // Verificación adicional justo antes de reservar (para máxima seguridad)
+    const finalCheck = await getSlotById(slotId);
+    if (!finalCheck.success || finalCheck.data.estado !== 'Disponible') {
+      return Response.json({
+        success: false,
+        error: 'El horario fue ocupado mientras se procesaba su solicitud',
+        code: 'SLOT_UNAVAILABLE',
+        slotData: finalCheck.data
+      }, { status: 409 });
+    }
     
     const result = await bookSlot(slotId, personalInfo, services);
     
@@ -103,76 +115,8 @@ export async function POST(request) {
   }
 }
 
-// // app/api/book-appointment/route.js - Versión simplificada
-// import { bookSlot } from '@/lib/notion';
-
-// export async function POST(request) {
-//   try {
-//     const body = await request.json();
-//     const { slotId, personalInfo, services, dateTime } = body;
-
-//     // Validar datos requeridos
-//     if (!slotId || !personalInfo || !services || !dateTime) {
-//       return Response.json({
-//         success: false,
-//         error: 'Datos incompletos',
-//         missing: {
-//           slotId: !slotId,
-//           personalInfo: !personalInfo,
-//           services: !services,
-//           dateTime: !dateTime
-//         }
-//       }, { status: 400 });
-//     }
-
-//     // Validar información personal
-//     if (!personalInfo.name || !personalInfo.phone || !personalInfo.email) {
-//       return Response.json({
-//         success: false,
-//         error: 'Información personal incompleta',
-//         missing: {
-//           name: !personalInfo.name,
-//           phone: !personalInfo.phone,
-//           email: !personalInfo.email
-//         }
-//       }, { status: 400 });
-//     }
-
-//     console.log('📝 Agendando cita en slot:', slotId);
-    
-//     const result = await bookSlot(slotId, personalInfo, services);
-    
-//     if (result.success) {
-//       console.log('✅ Cita agendada exitosamente');
-      
-//       return Response.json({
-//         success: true,
-//         message: result.message,
-//         appointmentDetails: {
-//           client: personalInfo.name,
-//           date: dateTime.selectedDate,
-//           time: dateTime.selectedTime,
-//           package: services.selectedPackage?.name,
-//           vehicle: services.selectedVehicle,
-//           price: services.selectedPackage?.prices?.[services.selectedVehicle]
-//         }
-//       });
-//     } else {
-//       console.error('❌ Error agendando cita:', result.error);
-      
-//       return Response.json({
-//         success: false,
-//         error: result.error
-//       }, { status: 500 });
-//     }
-    
-//   } catch (error) {
-//     console.error('❌ Error en API /api/book-appointment:', error);
-//     return Response.json({
-//       success: false,
-//       error: 'Error interno del servidor',
-//       details: error.message,
-//       suggestion: 'Verifica que NOTION_DATABASE_AVAILABILITY_ID esté configurado correctamente'
-//     }, { status: 500 });
-//   }
-// }
+// Aplicar rate limiting y bloqueo de slots
+export const POST = withRateLimit(
+  withReservationLock(bookAppointmentHandler),
+  '/api/book-appointment'
+);

@@ -10,6 +10,7 @@ import {
   Truck,
   Mountain,
   MessageSquare,
+  MessageSquarePlus,
   ArrowRight,
   ArrowLeft,
   X,
@@ -20,12 +21,12 @@ import {
 const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(data.selectedPackage);
-  // CAMBIO: Inicializar con el vehículo guardado o sedan por defecto
   const [selectedVehicle, setSelectedVehicle] = useState(data.selectedVehicle || "sedan");
   const [additionalMessage, setAdditionalMessage] = useState(
     data.additionalMessage || ""
   );
   const [showPackageDetails, setShowPackageDetails] = useState(null);
+  const [showExtraServices, setShowExtraServices] = useState(false);
 
   useEffect(() => {
     setIsAnimating(true);
@@ -94,6 +95,17 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
     },
   ];
 
+  // Lista de servicios extra
+  const extraServices = [
+    { id: 1, name: "Pulido de parabrisas", description: "Eliminación de rayones y opacidad" },
+    { id: 2, name: "Pulido de vidrios 360", description: "Tratamiento completo todos los vidrios" },
+    { id: 3, name: "Pulido de faros", description: "Restauración y claridad de faros" },
+    { id: 4, name: "PPF en manillas de puertas", description: "Protección película transparente" },
+    { id: 5, name: "PPF en filos de puertas", description: "Protección contra rayones" },
+    { id: 6, name: "PPF en faros", description: "Protección película transparente" },
+    { id: 7, name: "PPF en pantallas", description: "Protección pantallas táctiles" }
+  ];
+
   const vehicleTypes = [
     { key: "sedan", label: "Sedán", icon: Car },
     { key: "suv", label: "SUV", icon: Truck },
@@ -109,37 +121,64 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
     }).format(price);
   };
 
+  // Función para toggle de servicios extra
+  const toggleExtraServices = () => {
+    setShowExtraServices(!showExtraServices);
+    // Cerrar detalles de paquetes cuando se cambie la vista
+    setShowPackageDetails(null);
+  };
+
+  // Función para agregar servicio al mensaje
+  const addServiceToMessage = (serviceName) => {
+    const currentMessage = additionalMessage.trim();
+    let newMessage = "";
+    
+    if (currentMessage === "") {
+      newMessage = `Servicio extra: ${serviceName}`;
+    } else {
+      // Verificar si el servicio ya está en el mensaje
+      if (currentMessage.includes(serviceName)) {
+        // Si ya está, no agregar duplicado
+        return;
+      }
+      newMessage = `${currentMessage}\nServicio extra: ${serviceName}`;
+    }
+    
+    setAdditionalMessage(newMessage);
+    updateData({
+      selectedPackage,
+      selectedVehicle,
+      additionalMessage: newMessage,
+    });
+  };
+
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
-    // CAMBIO: Incluir selectedVehicle en updateData
     updateData({
       selectedPackage: pkg,
-      selectedVehicle, // Agregar esta línea
+      selectedVehicle,
       additionalMessage,
     });
   };
 
-  // CAMBIO: Nueva función para manejar cambio de vehículo
   const handleVehicleChange = (vehicleType) => {
     setSelectedVehicle(vehicleType);
     updateData({
       selectedPackage,
-      selectedVehicle: vehicleType, // Guardar el tipo de vehículo
+      selectedVehicle: vehicleType,
       additionalMessage,
     });
   };
 
   const handleMessageChange = (message) => {
     setAdditionalMessage(message);
-    // CAMBIO: Incluir selectedVehicle en updateData
     updateData({
       selectedPackage,
-      selectedVehicle, // Agregar esta línea
+      selectedVehicle,
       additionalMessage: message,
     });
   };
 
-  // NUEVO: Función para manejar el siguiente paso con scroll al top
   const handleNext = () => {
     if (selectedPackage) {
       // Hacer scroll instantáneo al top de la página
@@ -185,128 +224,114 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 min-w-0 px-4 sm:px-6 lg:px-8">
-          {/* Vehicle Type Selector - parte del scroll */}
-          <div className="mb-6 sm:mb-8">
-            <h4 className="text-white font-semibold mb-3 sm:mb-4 text-center text-sm sm:text-base">
-              Tipo de Vehículo
-            </h4>
-            <div className="grid grid-cols-3 gap-1 sm:gap-2 bg-black/20 p-1 sm:p-2 rounded-lg">
-              {vehicleTypes.map((vehicle) => {
-                const IconComponent = vehicle.icon;
-                return (
-                  <button
-                    key={vehicle.key}
-                    onClick={() => handleVehicleChange(vehicle.key)}
-                    className={`flex flex-col items-center p-2 sm:p-3 rounded-md transition-all duration-300 ${
-                      selectedVehicle === vehicle.key
-                        ? "bg-red-orange-500 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    <IconComponent className="w-4 h-4 sm:w-6 sm:h-6 mb-1 sm:mb-2" />
-                    <span className="text-xs sm:text-sm font-medium">
-                      {vehicle.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+          
+          {/* Toggle Button para Servicios Extra */}
+          <div className="mb-6 sm:mb-8 text-center">
+            <button
+              onClick={toggleExtraServices}
+              className={`inline-flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-lg transition-all duration-300 active:scale-95 shadow-lg font-medium text-sm sm:text-base ${
+                showExtraServices
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+                  : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600"
+              }`}
+            >
+              {showExtraServices ? (
+                <>
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Volver a Paquetes</span>
+                  <span className="sm:hidden">Paquetes</span>
+                </>
+              ) : (
+                <>
+                  <span className="hidden sm:inline">Ver Servicios Extra</span>
+                  <span className="sm:hidden">Servicios Extra</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
           </div>
-          {/* Packages Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 min-w-0">
-            {packages.map((pkg) => {
-              const IconComponent = pkg.icon;
-              const isSelected = selectedPackage?.id === pkg.id;
 
-              return (
-                <div
-                  key={pkg.id}
-                  onClick={() => handlePackageSelect(pkg)}
-                  className={`relative group cursor-pointer transition-all duration-300 
-                  /* Solo hover y zoom en pantallas grandes (lg y superiores) */
-                  lg:hover:scale-105 lg:transform
-                  /* En pantallas pequeñas mantener escala normal */
-                  ${isSelected ? "lg:scale-105" : "scale-100"}
-                `}
-                >
-                  <div
-                    className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-4 sm:p-6 border transition-all duration-300 relative ${
-                      isSelected
-                        ? "border-red-orange-500 bg-red-orange-500/10"
-                        : "border-white/10 lg:hover:border-white/20"
-                    }`}
-                  >
-                    {/* Selection Ring - Solo visible cuando está seleccionado */}
-                    {isSelected && (
-                      <div className="absolute -inset-1 bg-gradient-to-r from-red-orange-500/60 to-red-orange-600/60 rounded-xl blur-sm animate-pulse-soft" />
-                    )}
-
-                    {/* Card Content */}
-                    <div className="relative z-10 bg-gradient-to-br from-white/10 to-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
-                      {/* Package Header */}
-                      <div className="text-center mb-3 sm:mb-4">
-                        <div
-                          className={`inline-flex p-2 sm:p-3 rounded-full bg-gradient-to-r ${pkg.color} shadow-lg mb-2 sm:mb-3`}
-                        >
-                          <IconComponent className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                        </div>
-                        <h3
-                          className={`text-base sm:text-lg font-bold mb-1 bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent`}
-                        >
-                          {pkg.name}
-                        </h3>
-                        <p className="text-xs text-gray-300">{pkg.subtitle}</p>
-                      </div>
-
-                      {/* Price */}
-                      <div className="text-center mb-3 sm:mb-4">
-                        <div className="text-lg sm:text-xl font-bold text-white">
-                          {formatPrice(pkg.prices[selectedVehicle])}
-                        </div>
-                      </div>
-
-                      {/* Highlights */}
-                      <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
-                        {pkg.highlights.slice(0, 3).map((highlight, index) => (
-                          <div key={index} className="flex items-start gap-2">
-                            <Check className="w-3 h-3 text-red-orange-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-xs text-gray-300 leading-tight">
-                              {highlight}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Details Button */}
+          {!showExtraServices ? (
+            // CONTENIDO ORIGINAL: Tipo de Vehículo y Paquetes
+            <>
+              {/* Vehicle Type Selector */}
+              <div className="mb-6 sm:mb-8">
+                <h4 className="text-white font-semibold mb-3 sm:mb-4 text-center text-sm sm:text-base">
+                  Tipo de Vehículo
+                </h4>
+                <div className="grid grid-cols-3 gap-1 sm:gap-2 bg-black/20 p-1 sm:p-2 rounded-lg">
+                  {vehicleTypes.map((vehicle) => {
+                    const IconComponent = vehicle.icon;
+                    return (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowPackageDetails(
-                            showPackageDetails === pkg.id ? null : pkg.id
-                          );
-                        }}
-                        className="w-full py-2 text-xs text-red-orange-500 hover:text-red-orange-400 transition-colors duration-300 flex items-center justify-center gap-1"
+                        key={vehicle.key}
+                        onClick={() => handleVehicleChange(vehicle.key)}
+                        className={`flex flex-col items-center p-2 sm:p-3 rounded-md transition-all duration-300 ${
+                          selectedVehicle === vehicle.key
+                            ? "bg-red-orange-500 text-white"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
+                        }`}
                       >
-                        <Info className="w-3 h-3" />
-                        <span className="hidden sm:inline">
-                          {showPackageDetails === pkg.id
-                            ? "Ocultar Detalles"
-                            : "Ver Más Detalles"}
-                        </span>
-                        <span className="sm:hidden">
-                          {showPackageDetails === pkg.id ? "Menos" : "Más"}
+                        <IconComponent className="w-4 h-4 sm:w-6 sm:h-6 mb-1 sm:mb-2" />
+                        <span className="text-xs sm:text-sm font-medium">
+                          {vehicle.label}
                         </span>
                       </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-                      {/* Expanded Details */}
-                      {showPackageDetails === pkg.id && (
-                        <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-black/20 rounded-lg animate-expandDown">
-                          <div className="space-y-1 sm:space-y-2">
-                            {pkg.highlights.slice(3).map((highlight, index) => (
-                              <div
-                                key={index}
-                                className="flex items-start gap-2"
-                              >
+              {/* Packages Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 min-w-0">
+                {packages.map((pkg) => {
+                  const IconComponent = pkg.icon;
+                  const isSelected = selectedPackage?.id === pkg.id;
+
+                  return (
+                    <div
+                      key={pkg.id}
+                      onClick={() => handlePackageSelect(pkg)}
+                      className={`relative group cursor-pointer transition-all duration-300 
+                      lg:hover:scale-105 lg:transform
+                      ${isSelected ? "lg:scale-105" : "scale-100"}
+                    `}
+                    >
+                      <div
+                        className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-4 sm:p-6 border transition-all duration-300 relative ${
+                          isSelected
+                            ? "border-red-orange-500 bg-red-orange-500/10"
+                            : "border-white/10 lg:hover:border-white/20"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="absolute -inset-1 bg-gradient-to-r from-red-orange-500/60 to-red-orange-600/60 rounded-xl blur-sm animate-pulse-soft" />
+                        )}
+
+                        <div className="relative z-10 bg-gradient-to-br from-white/10 to-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
+                          <div className="text-center mb-3 sm:mb-4">
+                            <div
+                              className={`inline-flex p-2 sm:p-3 rounded-full bg-gradient-to-r ${pkg.color} shadow-lg mb-2 sm:mb-3`}
+                            >
+                              <IconComponent className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+                            </div>
+                            <h3
+                              className={`text-base sm:text-lg font-bold mb-1 bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent`}
+                            >
+                              {pkg.name}
+                            </h3>
+                            <p className="text-xs text-gray-300">{pkg.subtitle}</p>
+                          </div>
+
+                          <div className="text-center mb-3 sm:mb-4">
+                            <div className="text-lg sm:text-xl font-bold text-white">
+                              {formatPrice(pkg.prices[selectedVehicle])}
+                            </div>
+                          </div>
+
+                          <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
+                            {pkg.highlights.slice(0, 3).map((highlight, index) => (
+                              <div key={index} className="flex items-start gap-2">
                                 <Check className="w-3 h-3 text-red-orange-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-xs text-gray-300 leading-tight">
                                   {highlight}
@@ -314,23 +339,118 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
                               </div>
                             ))}
                           </div>
-                        </div>
-                      )}
 
-                      {/* Selection Indicator */}
-                      {isSelected && (
-                        <div className="absolute top-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-orange-500 rounded-full flex items-center justify-center animate-scaleIn z-20">
-                          <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowPackageDetails(
+                                showPackageDetails === pkg.id ? null : pkg.id
+                              );
+                            }}
+                            className="w-full py-2 text-xs text-red-orange-500 hover:text-red-orange-400 transition-colors duration-300 flex items-center justify-center gap-1"
+                          >
+                            <Info className="w-3 h-3" />
+                            <span className="hidden sm:inline">
+                              {showPackageDetails === pkg.id
+                                ? "Ocultar Detalles"
+                                : "Ver Más Detalles"}
+                            </span>
+                            <span className="sm:hidden">
+                              {showPackageDetails === pkg.id ? "Menos" : "Más"}
+                            </span>
+                          </button>
+
+                          {showPackageDetails === pkg.id && (
+                            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-black/20 rounded-lg animate-expandDown">
+                              <div className="space-y-1 sm:space-y-2">
+                                {pkg.highlights.slice(3).map((highlight, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <Check className="w-3 h-3 text-red-orange-500 mt-0.5 flex-shrink-0" />
+                                    <span className="text-xs text-gray-300 leading-tight">
+                                      {highlight}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-orange-500 rounded-full flex items-center justify-center animate-scaleIn z-20">
+                              <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            // NUEVO CONTENIDO: Lista de Servicios Extra
+            <div className="mb-6 sm:mb-8">
+              <div className="text-center mb-6">
+                <h4 className="text-white font-semibold mb-2 text-base sm:text-lg">
+                  Servicios Extra Disponibles
+                </h4>
+                <div className="inline-flex items-center gap-2 px-3 py-2 bg-yellow-500/15 rounded-full">
+                  <Info className="w-4 h-4 text-yellow-400" />
+                  <span className="text-xs text-yellow-400">
+                    El precio varía según modelo de vehículo
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:gap-4">
+                {extraServices.map((service) => (
+                  <div
+                    key={service.id}
+                    onClick={() => addServiceToMessage(service.name)}
+                    className="group bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-purple-500/30 transition-all duration-300 cursor-pointer hover:bg-purple-500/5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h5 className="text-white font-medium text-sm sm:text-base mb-1">
+                          {service.name}
+                        </h5>
+                        <p className="text-white/60 text-xs sm:text-sm">
+                          {service.description}
+                        </p>
+                      </div>
+                      <div className="ml-4 flex items-center gap-2">
+                        <span className="text-xs text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Clic para agregar
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                ))}
+              </div>
 
-          {/* Additional Message */}
+              {/* Nota informativa */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <MessageSquare className="w-5 h-5 text-purple-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h6 className="text-white font-medium text-sm mb-1">
+                      ¿Cómo funciona?
+                    </h6>
+                    <p className="text-white/80 text-xs leading-relaxed">
+                      Haz clic en cualquier servicio extra para agregarlo automáticamente al campo de mensaje opcional. 
+                      Puedes seleccionar múltiples servicios y nosotros te cotizaremos el precio según tu vehículo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Additional Message - Siempre visible */}
           <div className="mb-6 sm:mb-8">
             <label className="block text-white font-semibold mb-2 sm:mb-3 flex items-center gap-2 text-sm sm:text-base">
               <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-red-orange-500 flex-shrink-0" />
