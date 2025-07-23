@@ -191,7 +191,7 @@ const ContactSection = () => {
                       <MapPin className="w-5 h-5 xs:w-6 xs:h-6 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-red-orange-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
                       <div className="text-left">
                         <p className="text-gray-300 text-base xs:text-lg sm:text-base lg:text-lg xl:text-xl leading-relaxed">
-                          San José, Costa Rica
+                          Copa Buena, Coto Brus
                         </p>
                       </div>
                     </div>
@@ -217,7 +217,7 @@ const ContactSection = () => {
                           href="mailto:info@lionsautodetailing.com"
                           className="text-gray-300 hover:text-red-orange-500 transition-colors duration-300 text-base xs:text-lg sm:text-base lg:text-lg xl:text-xl font-medium break-all"
                         >
-                          info@lionsautodetailing.com
+                          lionsautodetailing11@gmail.com
                         </a>
                       </div>
                     </div>
@@ -230,7 +230,7 @@ const ContactSection = () => {
                       <div className="flex justify-center md:justify-start gap-4 sm:gap-4">
                         {/* Facebook */}
                         <a
-                          href="https://facebook.com"
+                          href="https://www.facebook.com/share/1BQuLt99hL/"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-12 h-12 xs:w-14 xs:h-14 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl"
