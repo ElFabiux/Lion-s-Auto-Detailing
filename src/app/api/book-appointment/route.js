@@ -33,8 +33,6 @@ async function bookAppointmentHandler(request) {
         }
       }, { status: 400 });
     }
-
-    console.log('📝 Verificando disponibilidad del slot:', slotId);
     
     // Verificación de disponibilidad (con doble verificación para mayor seguridad)
     const slotCheck = await getSlotById(slotId);
@@ -62,8 +60,6 @@ async function bookAppointmentHandler(request) {
         }
       }, { status: 409 });
     }
-
-    console.log('✅ Slot disponible, procediendo con el agendamiento');
     
     // Verificación adicional justo antes de reservar (para máxima seguridad)
     const finalCheck = await getSlotById(slotId);
@@ -79,7 +75,6 @@ async function bookAppointmentHandler(request) {
     const result = await bookSlot(slotId, personalInfo, services);
     
     if (result.success) {
-      console.log('✅ Cita agendada exitosamente');
       
       return Response.json({
         success: true,

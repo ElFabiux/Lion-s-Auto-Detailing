@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import FormSidebar from './FormSidebar';
-import PersonalInfoStep from './PersonalInfoStep';
-import DateTimeStep from './DateTimeStep ';
-import ServicesStep from './ServicesStep ';
-import ConfirmationStep from './ConfirmationStep';
+import { useState } from "react";
+import FormSidebar from "./FormSidebar";
+import PersonalInfoStep from "./PersonalInfoStep";
+import DateTimeStep from "./DateTimeStep ";
+import ServicesStep from "./ServicesStep ";
+import ConfirmationStep from "./ConfirmationStep";
 
 const BookingForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     personalInfo: {
-      name: '',
-      phone: '',
-      email: ''
+      name: "",
+      phone: "",
+      email: "",
     },
     dateTime: {
       selectedDate: null,
       selectedTime: null,
-      slotId: null // ID del slot en Notion
+      slotId: null, // ID del slot en Notion
     },
     services: {
       selectedPackage: null,
-      selectedVehicle: 'sedan',
-      additionalMessage: ''
-    }
+      selectedVehicle: "sedan",
+      additionalMessage: "",
+    },
   });
 
   const updateFormData = (step, data) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [step]: { ...prev[step], ...data }
+      [step]: { ...prev[step], ...data },
     }));
   };
 
@@ -41,26 +41,30 @@ const BookingForm = () => {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: 'instant'
+      behavior: "instant",
     });
-    
+
     // Scroll del contenedor móvil/tablet (si existe)
-    const mobileContainer = document.querySelector('.lg\\:hidden .overflow-y-auto');
+    const mobileContainer = document.querySelector(
+      ".lg\\:hidden .overflow-y-auto"
+    );
     if (mobileContainer) {
       mobileContainer.scrollTo({
         top: 0,
         left: 0,
-        behavior: 'instant'
+        behavior: "instant",
       });
     }
-    
+
     // Scroll del contenedor desktop (si existe)
-    const desktopContainer = document.querySelector('.lg\\:flex .overflow-y-auto');
+    const desktopContainer = document.querySelector(
+      ".lg\\:flex .overflow-y-auto"
+    );
     if (desktopContainer) {
       desktopContainer.scrollTo({
         top: 0,
         left: 0,
-        behavior: 'instant'
+        behavior: "instant",
       });
     }
   };
@@ -69,7 +73,7 @@ const BookingForm = () => {
     if (currentStep < 4) {
       // Primero hacer scroll al top
       scrollToTop();
-      
+
       // Luego cambiar el paso (con un pequeño delay para asegurar el scroll)
       setTimeout(() => {
         setCurrentStep(currentStep + 1);
@@ -81,7 +85,7 @@ const BookingForm = () => {
     if (currentStep > 1) {
       // Hacer scroll al top también al retroceder
       scrollToTop();
-      
+
       setTimeout(() => {
         setCurrentStep(currentStep - 1);
       }, 50);
@@ -89,41 +93,40 @@ const BookingForm = () => {
   };
 
   const exitForm = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   // Función simplificada para enviar el formulario
   // El manejo de respuesta (éxito/error) se hace en ConfirmationStep
   const submitForm = async () => {
-    console.log('📝 BookingForm: Iniciando envío de formulario...');
-    
     // Validar que tenemos todos los datos necesarios
-    if (!formData.dateTime.slotId || !formData.personalInfo.name || !formData.services.selectedPackage) {
-      throw new Error('Datos incompletos para agendar la cita');
+    if (
+      !formData.dateTime.slotId ||
+      !formData.personalInfo.name ||
+      !formData.services.selectedPackage
+    ) {
+      throw new Error("Datos incompletos para agendar la cita");
     }
 
-    console.log('✅ BookingForm: Datos validados, enviando a API...');
-    
     // Enviar datos a la API
-    const response = await fetch('/api/book-appointment', {
-      method: 'POST',
+    const response = await fetch("/api/book-appointment", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         slotId: formData.dateTime.slotId,
         personalInfo: formData.personalInfo,
         services: formData.services,
-        dateTime: formData.dateTime
+        dateTime: formData.dateTime,
       }),
     });
 
     const result = await response.json();
-    console.log('📡 BookingForm: Respuesta recibida:', result);
 
     // Si hay error, lanzar excepción para que ConfirmationStep lo maneje
     if (!result.success) {
-      const error = new Error(result.error || 'Error al agendar la cita');
+      const error = new Error(result.error || "Error al agendar la cita");
       error.code = result.code; // Preservar el código de error
       error.slotData = result.slotData; // Preservar datos del slot si están disponibles
       throw error;
@@ -138,7 +141,7 @@ const BookingForm = () => {
         return (
           <PersonalInfoStep
             data={formData.personalInfo}
-            updateData={(data) => updateFormData('personalInfo', data)}
+            updateData={(data) => updateFormData("personalInfo", data)}
             onNext={nextStep}
             onExit={exitForm}
           />
@@ -147,7 +150,7 @@ const BookingForm = () => {
         return (
           <DateTimeStep
             data={formData.dateTime}
-            updateData={(data) => updateFormData('dateTime', data)}
+            updateData={(data) => updateFormData("dateTime", data)}
             onNext={nextStep}
             onPrev={prevStep}
             onExit={exitForm}
@@ -157,7 +160,7 @@ const BookingForm = () => {
         return (
           <ServicesStep
             data={formData.services}
-            updateData={(data) => updateFormData('services', data)}
+            updateData={(data) => updateFormData("services", data)}
             onNext={nextStep}
             onPrev={prevStep}
             onExit={exitForm}
@@ -184,12 +187,10 @@ const BookingForm = () => {
       <div className="hidden lg:flex h-full">
         {/* Sidebar izquierdo */}
         <FormSidebar currentStep={currentStep} />
-        
+
         {/* Área del formulario derecho */}
         <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
-          <div className="w-full max-w-2xl">
-            {renderStep()}
-          </div>
+          <div className="w-full max-w-2xl">{renderStep()}</div>
         </div>
       </div>
 
@@ -197,21 +198,22 @@ const BookingForm = () => {
       <div className="lg:hidden h-full flex flex-col">
         {/* Header móvil con indicador de pasos - FIJO */}
         <FormSidebar currentStep={currentStep} />
-        
+
         {/* Área del formulario - SCROLLABLE */}
         <div className="flex-1 overflow-y-auto">
           <div className="min-h-full flex items-center justify-center p-4 sm:p-6 pt-8 pb-12">
-            <div className="w-full max-w-lg">
-              {renderStep()}
-            </div>
+            <div className="w-full max-w-lg">{renderStep()}</div>
           </div>
         </div>
       </div>
-      
+
       {/* Elementos decorativos de fondo */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-red-orange-500/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-red-orange-500/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        <div
+          className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-red-orange-500/3 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        />
       </div>
     </div>
   );

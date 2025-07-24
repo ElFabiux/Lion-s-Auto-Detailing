@@ -42,15 +42,10 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
       setLoading(true);
       setError(null);
 
-      console.log("🔄 Fetching slots from API...");
       const response = await fetch("/api/slots");
       const result = await response.json();
 
-      console.log("📡 API Response:", result);
-
       if (result.success) {
-        console.log("✅ API Success, received slots:", result.data.length);
-
         const slotsFromAPI = result.data || [];
 
         // Filtrar fechas futuras CON CORRECCIÓN de zona horaria
@@ -62,23 +57,11 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
 
-          console.log(
-            `📅 Comparing: ${
-              slot.fecha
-            } (${slotDate.toDateString()}) vs Today (${today.toDateString()})`
-          );
-
           return slotDate >= today;
         });
 
-        console.log(
-          `📅 Filtered future slots: ${futureSlots.length} of ${slotsFromAPI.length}`
-        );
-        console.log("📋 Final slots to display:", futureSlots);
-
         setAvailableSlots(futureSlots);
       } else {
-        console.error("❌ API Error:", result.error);
         setError(result.error || "Error al cargar disponibilidad");
       }
     } catch (error) {

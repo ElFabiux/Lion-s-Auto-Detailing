@@ -50,8 +50,6 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
     setIsSubmitting(true);
 
     try {
-      console.log("🚀 Enviando solicitud de agendamiento...");
-
       const response = await fetch("/api/book-appointment", {
         method: "POST",
         headers: {
@@ -66,11 +64,9 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
       });
 
       const result = await response.json();
-      console.log("📡 Respuesta de la API:", result);
 
       if (result.success) {
         // CASO 1: Éxito - Cita agendada correctamente
-        console.log("✅ Cita agendada exitosamente");
 
         const selectedVehicle = formData.services.selectedVehicle || "sedan";
         const packagePrice =
