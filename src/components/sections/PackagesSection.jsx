@@ -62,7 +62,7 @@ const PackagesSection = () => {
       prices: {
         sedan: 45000,
         suv: 50000,
-        "4x4": 55000
+        "4x4": 60000
       },
       icon: Star,
       featured: false,
