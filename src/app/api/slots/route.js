@@ -1,4 +1,3 @@
-// app/api/slots/route.js - Con rate limiting
 import { getAvailableSlots } from '@/lib/notion';
 import { withRateLimit } from '@/lib/rate-limiter';
 
@@ -16,7 +15,7 @@ async function getSlotsHandler(request) {
       return Response.json({
         success: false,
         error: result.error,
-        suggestion: 'Verifica que NOTION_DATABASE_AVAILABILITY_ID esté configurado correctamente'
+        suggestion: 'Verificar que NOTION_DATABASE_AVAILABILITY_ID esté configurado correctamente'
       }, { status: 500 });
     }
   } catch (error) {

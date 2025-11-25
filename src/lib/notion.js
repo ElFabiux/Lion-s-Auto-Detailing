@@ -1,6 +1,3 @@
-// lib/notion.js - Con función getSlotById agregada
-// Funciones simplificadas para UNA SOLA base de datos
-
 import { Client } from '@notionhq/client';
 
 // Inicializar cliente de Notion
@@ -10,18 +7,12 @@ const notion = new Client({
 
 const DATABASE_ID = process.env.NOTION_DATABASE_AVAILABILITY_ID;
 
-/**
- * Función auxiliar para calcular el día de la semana desde una fecha
- */
 function calculateDayOfWeek(isoDate) {
   const date = new Date(isoDate + 'T00:00:00');
   const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   return days[date.getDay()];
 }
 
-/**
- * NUEVA FUNCIÓN: Obtener un slot específico por ID para verificar su estado
- */
 export async function getSlotById(slotId) {
   try {
     if (!DATABASE_ID) {

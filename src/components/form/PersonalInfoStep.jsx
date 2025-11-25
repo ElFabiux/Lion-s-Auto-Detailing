@@ -8,11 +8,10 @@ const PersonalInfoStep = ({ data, updateData, onNext, onExit }) => {
   const [errors, setErrors] = useState({});
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Límites de caracteres
   const CHARACTER_LIMITS = {
-    name: 25,    // Nombre: máximo 50 caracteres
-    email: 70,  // Email: máximo 100 caracteres
-    phone: 8     // Teléfono: exactamente 8 dígitos
+    name: 25,   
+    email: 70,  
+    phone: 8    
   };
 
   useEffect(() => {
@@ -91,7 +90,6 @@ const PersonalInfoStep = ({ data, updateData, onNext, onExit }) => {
     return limited;
   };
 
-  // Función para obtener el color del contador de caracteres
   const getCharacterCountColor = (current, max) => {
     const percentage = (current / max) * 100;
     if (percentage < 70) return 'text-white/60';
@@ -99,7 +97,7 @@ const PersonalInfoStep = ({ data, updateData, onNext, onExit }) => {
     return 'text-red-400';
   };
 
-  // Función para mostrar si el campo está cerca del límite
+
   const shouldShowCharacterCount = (current, max) => {
     return (current / max) > 0.7; // Mostrar cuando esté al 70% o más
   };

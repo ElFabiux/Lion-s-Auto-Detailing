@@ -10,7 +10,6 @@ const GallerySection = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const sectionRef = useRef(null);
 
-  // Intersection Observer para animaciones
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -33,7 +32,6 @@ const GallerySection = () => {
     };
   }, []);
 
-  // Prevenir scroll del body cuando el modal está abierto
   useEffect(() => {
     if (selectedImage !== null) {
       document.body.style.overflow = "hidden";
@@ -186,10 +184,8 @@ const GallerySection = () => {
         id="galeria"
         className="relative min-h-screen bg-white py-20"
       >
-        {/* Content - Z-INDEX REDUCIDO para estar por debajo de modales */}
         <div className="relative z-0 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            {/* Header - Z-INDEX específico bajo */}
             <div
               className={`text-center mb-16 transition-all duration-1000 delay-300 relative z-0 ${
                 isVisible
@@ -206,7 +202,6 @@ const GallerySection = () => {
               </p>
             </div>
 
-            {/* Tabs - Z-INDEX bajo */}
             <div
               className={`flex justify-center mb-16 transition-all duration-1000 delay-500 relative z-0 ${
                 isVisible
@@ -245,7 +240,6 @@ const GallerySection = () => {
               </div>
             </div>
 
-            {/* Gallery Grid - Z-INDEX bajo */}
             <div
               key={activeTab}
               className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 relative z-0 ${
@@ -301,7 +295,6 @@ const GallerySection = () => {
         </div>
       </section>
 
-      {/* Modal for full-size images - Z-INDEX MUY ALTO */}
       {selectedImage && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
           {/* Backdrop */}

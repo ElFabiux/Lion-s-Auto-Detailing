@@ -74,7 +74,6 @@ const BookingForm = () => {
       // Primero hacer scroll al top
       scrollToTop();
 
-      // Luego cambiar el paso (con un pequeño delay para asegurar el scroll)
       setTimeout(() => {
         setCurrentStep(currentStep + 1);
       }, 50);
@@ -97,7 +96,6 @@ const BookingForm = () => {
   };
 
   // Función simplificada para enviar el formulario
-  // El manejo de respuesta (éxito/error) se hace en ConfirmationStep
   const submitForm = async () => {
     // Validar que tenemos todos los datos necesarios
     if (

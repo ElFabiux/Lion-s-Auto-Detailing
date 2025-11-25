@@ -1,10 +1,5 @@
-// lib/rate-limiter.js
-// Sistema de rate limiting en memoria (para desarrollo)
-// Para producción, usar Redis
-
 const rateLimitStore = new Map();
 
-// Configuraciones por endpoint
 const RATE_LIMITS = {
   '/api/slots': { window: 60000, max: 15 }, // 10 requests por minuto
   '/api/book-appointment': { window: 300000, max: 3 }, // 3 reservas por 5 minutos
@@ -124,7 +119,7 @@ export function withRateLimit(handler, endpoint) {
       
       return response;
     } catch (error) {
-      console.error('❌ Error en rate limiter:', error);
+      console.error('Error en rate limiter:', error);
       // Si hay error en el rate limiter, continuar sin bloquear
       return handler(request, context);
     }
@@ -149,7 +144,7 @@ export function withReservationLock(handler) {
       
       // Verificar si el slot está siendo procesado
       if (reservationLocks.has(slotId)) {
-        console.warn(`⚠️ Slot ${slotId} ya está siendo procesado`);
+        console.warn(`Slot ${slotId} ya está siendo procesado`);
         return Response.json({
           success: false,
           error: 'Este horario está siendo procesado por otro usuario. Intente en unos segundos.',
@@ -159,7 +154,7 @@ export function withReservationLock(handler) {
       
       // Bloquear el slot
       reservationLocks.set(slotId, Date.now());
-      console.log(`🔒 Slot ${slotId} bloqueado para procesamiento`);
+      console.log(`Slot ${slotId} bloqueado para procesamiento`);
       
       try {
         // Recrear el request con el body parseado para el handler
@@ -175,10 +170,10 @@ export function withReservationLock(handler) {
       } finally {
         // Liberar el bloqueo
         reservationLocks.delete(slotId);
-        console.log(`🔓 Slot ${slotId} liberado`);
+        console.log(`Slot ${slotId} liberado`);
       }
     } catch (error) {
-      console.error('❌ Error en reservation lock:', error);
+      console.error('Error en reservation lock:', error);
       // Si hay error, asegurar que se libere el bloqueo
       if (body?.slotId) {
         reservationLocks.delete(body.slotId);

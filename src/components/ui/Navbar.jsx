@@ -29,7 +29,6 @@ const Navbar = () => {
     setIsHydrated(true);
   }, []);
 
-  // Detectar cuando se abre/cierra un modal
   useEffect(() => {
     const handleModalOpen = () => setIsModalOpen(true);
     const handleModalClose = () => setIsModalOpen(false);
@@ -119,7 +118,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [targetSection, isHydrated]);
 
-  // Función para scroll suave
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (!element) return;

@@ -124,7 +124,6 @@ const PackagesSection = () => {
 
   return (
     <>
-      {/* Fixed background image layer - optimized */}
       <div
         className={`fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat -z-10 transition-opacity duration-300 will-change-auto ${
           isVisible ? "opacity-100" : "opacity-0"
@@ -141,7 +140,6 @@ const PackagesSection = () => {
         className="relative min-h-screen overflow-hidden bg-transparent"
         style={{ willChange: "auto" }}
       >
-        {/* Dark overlay - optimized */}
         <div
           className="absolute inset-0 bg-black/70 z-0"
           style={{ willChange: "auto" }}

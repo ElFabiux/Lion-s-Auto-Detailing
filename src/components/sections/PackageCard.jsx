@@ -23,7 +23,6 @@ const PackageCard = ({ pkg, index }) => {
     }).format(price);
   };
 
-  // Información detallada para el modal
   const detailedInfo = {
     1: { // Bronce
       title: "Mantenimiento Para Cerámico",
@@ -96,7 +95,6 @@ const PackageCard = ({ pkg, index }) => {
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden'; // Prevenir scroll del body
     
-    // Emitir evento personalizado para que el navbar se oculte
     window.dispatchEvent(new CustomEvent('modalOpen'));
   };
 
@@ -104,7 +102,6 @@ const PackageCard = ({ pkg, index }) => {
     setIsModalOpen(false);
     document.body.style.overflow = 'unset'; // Restaurar scroll del body
     
-    // Emitir evento personalizado para que el navbar aparezca
     window.dispatchEvent(new CustomEvent('modalClose'));
   };
 
@@ -213,16 +210,13 @@ const PackageCard = ({ pkg, index }) => {
         <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
       </div>
 
-      {/* Modal - Z-INDEX MÁXIMO */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
-          {/* Backdrop - Z-INDEX MUY ALTO */}
           <div 
             className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fadeIn z-[99998]"
             onClick={closeModal}
           />
           
-          {/* Modal Content - Z-INDEX EL MÁS ALTO */}
           <div className="relative bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-slideUp z-[99999]">
             
             {/* Header */}

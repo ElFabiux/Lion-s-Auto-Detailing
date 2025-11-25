@@ -52,7 +52,6 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
         const futureSlots = slotsFromAPI.filter((slot) => {
           if (!slot.fecha) return false;
 
-          // CORRECCIÓN: Forzar medianoche local para evitar desfase
           const slotDate = new Date(slot.fecha + "T00:00:00");
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -65,7 +64,7 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
         setError(result.error || "Error al cargar disponibilidad");
       }
     } catch (error) {
-      console.error("❌ Network Error:", error);
+      console.error("Network Error:", error);
       setError("Error de conexión al cargar disponibilidad");
     } finally {
       setLoading(false);
@@ -79,8 +78,7 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
   };
 
   const formatDateForComparison = (isoDate) => {
-    // SOLUCIÓN: Usar UTC para evitar problemas de zona horaria
-    const date = new Date(isoDate + "T00:00:00"); // Forzar que sea medianoche local
+    const date = new Date(isoDate + "T00:00:00"); 
     return `${date.getDate().toString().padStart(2, "0")}/${(
       date.getMonth() + 1
     )
@@ -89,8 +87,7 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
   };
 
   const formatDateForDisplay = (isoDate) => {
-    // Usar la misma lógica para consistencia
-    const date = new Date(isoDate + "T00:00:00"); // Forzar que sea medianoche local
+    const date = new Date(isoDate + "T00:00:00"); 
     return `${date.getDate().toString().padStart(2, "0")}/${(
       date.getMonth() + 1
     )
@@ -148,7 +145,6 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
     );
   }
 
-  // Componente de Error (solo para errores REALES de conexión/API)
   if (error) {
     return (
       <div
@@ -188,7 +184,6 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
     );
   }
 
-  // Componente principal
   return (
     <div
       className={`transition-all duration-700 ${
@@ -216,7 +211,6 @@ const DateTimeStep = ({ data, updateData, onNext, onPrev, onExit }) => {
           <div className="w-16 sm:w-20 h-1 bg-red-orange-500 mx-auto rounded-full" />
         </div>
 
-        {/* CONDICIÓN CORREGIDA: Solo mostrar mensaje si NO hay slots disponibles */}
         {availableSlots.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-white/60 text-lg mb-4">

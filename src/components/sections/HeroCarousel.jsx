@@ -50,7 +50,6 @@ const HeroCarousel = () => {
       `Vengo desde su página web y quería contactarlos para...`
   );
 
-  // Auto-play del carrusel con reinicio cuando el usuario navega manualmente
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -107,7 +106,6 @@ const HeroCarousel = () => {
               style={{ backgroundImage: `url(${slide.backgroundImage})` }}
             />
 
-            {/* Overlay oscuro para mejorar legibilidad */}
             <div className="absolute inset-0 bg-black/50" />
 
             {/* Contenido */}

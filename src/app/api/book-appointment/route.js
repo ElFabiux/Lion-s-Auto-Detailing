@@ -1,4 +1,3 @@
-// app/api/book-appointment/route.js - Con rate limiting y bloqueo de slots
 import { bookSlot, getSlotById } from '@/lib/notion';
 import { withRateLimit, withReservationLock } from '@/lib/rate-limiter';
 

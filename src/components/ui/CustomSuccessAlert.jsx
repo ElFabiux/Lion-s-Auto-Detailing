@@ -1,10 +1,8 @@
-// components/ui/CustomSuccessAlert.jsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 
-// Actualización del ConfirmationStep.jsx para usar el alert personalizado
 
 const CustomSuccessAlert = ({ isOpen, onClose, appointmentData }) => {
   const [isVisible, setIsVisible] = useState(false);

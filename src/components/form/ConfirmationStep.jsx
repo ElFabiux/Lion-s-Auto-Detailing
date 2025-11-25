@@ -21,17 +21,17 @@ import {
 } from "lucide-react";
 import CustomSuccessAlert from "../ui/CustomSuccessAlert";
 import CustomUnavailableAlert from "../ui/CustomUnavailableAlert";
-import CustomProcessingAlert from "../ui/CustomProcessingAlert"; // NUEVA IMPORTACIÓN
+import CustomProcessingAlert from "../ui/CustomProcessingAlert"; 
 
 const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showUnavailableAlert, setShowUnavailableAlert] = useState(false);
-  const [showProcessingAlert, setShowProcessingAlert] = useState(false); // NUEVO STATE
+  const [showProcessingAlert, setShowProcessingAlert] = useState(false); 
   const [appointmentData, setAppointmentData] = useState(null);
   const [unavailableSlotData, setUnavailableSlotData] = useState(null);
-  const [processingData, setProcessingData] = useState({ lockedFor: 0 }); // NUEVO STATE
+  const [processingData, setProcessingData] = useState({ lockedFor: 0 }); 
 
   useEffect(() => {
     setIsAnimating(true);
@@ -122,7 +122,7 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
         throw new Error(result.error || "Error al agendar la cita");
       }
     } catch (error) {
-      console.error("❌ Error al enviar formulario:", error);
+      console.error("Error al enviar formulario:", error);
 
       // Manejar errores de red específicos
       if (error.name === "TypeError" && error.message.includes("fetch")) {
@@ -150,7 +150,6 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
     // NO redirigir - el usuario permanece en el formulario
   };
 
-  // NUEVA FUNCIÓN: Manejar cierre del alert de procesamiento
   const handleProcessingAlertClose = () => {
     setShowProcessingAlert(false);
     // Permitir que el usuario intente de nuevo
@@ -190,14 +189,11 @@ const ConfirmationStep = ({ formData, onSubmit, onPrev, onExit }) => {
     return months[parseInt(month) - 1];
   };
 
-  // Obtener el tipo de vehículo seleccionado
   const selectedVehicle = formData.services.selectedVehicle || "sedan";
 
-  // Obtener el precio según el tipo de vehículo
   const packagePrice =
     formData.services.selectedPackage.prices[selectedVehicle];
 
-  // Mapear los nombres de los vehículos para mostrar
   const vehicleNames = {
     sedan: "Sedán",
     suv: "SUV",

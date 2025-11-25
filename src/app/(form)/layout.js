@@ -15,7 +15,6 @@ export default function BookingLayout({ children }) {
   return (
     <html lang="es">
       <body className={inter.className}>
-        {/* Sin Navbar - pantalla completa para el formulario */}
         <main className="min-h-screen">
           {children}
         </main>

@@ -121,14 +121,12 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
     }).format(price);
   };
 
-  // Función para toggle de servicios extra
   const toggleExtraServices = () => {
     setShowExtraServices(!showExtraServices);
     // Cerrar detalles de paquetes cuando se cambie la vista
     setShowPackageDetails(null);
   };
 
-  // Función para agregar servicio al mensaje
   const addServiceToMessage = (serviceName) => {
     const currentMessage = additionalMessage.trim();
     let newMessage = "";
@@ -209,7 +207,6 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
         isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
     >
-      {/* Container responsive - móvil: full height, desktop: tamaño fijo centrado */}
       <div className="w-full h-full lg:h-auto lg:max-h-[85vh] lg:w-[900px] lg:max-w-4xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden min-w-0">
         {/* Header - fijo en la parte superior */}
         <div className="flex-shrink-0 text-center p-4 sm:p-6 lg:p-8 pb-4 sm:pb-6">
@@ -252,7 +249,6 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
           </div>
 
           {!showExtraServices ? (
-            // CONTENIDO ORIGINAL: Tipo de Vehículo y Paquetes
             <>
               {/* Vehicle Type Selector */}
               <div className="mb-6 sm:mb-8">

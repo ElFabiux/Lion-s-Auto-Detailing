@@ -19,7 +19,6 @@ const ContactSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
-  // Intersection Observer para el background (mantenemos solo para el fondo)
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -58,7 +57,6 @@ const ContactSection = () => {
       `Me quería contactar directamente con ustedes para...`
   );
 
-  // Función de scroll que NO interfiere con el navbar
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -97,11 +95,8 @@ const ContactSection = () => {
           <div className="max-w-7xl mx-auto w-full">
             {/* Main Content Grid - Responsive */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 items-start">
-              {/* Columna 1 - Logo y nombre */}
               <div
                 className={`text-center md:text-left ${
-                  // En MD (768px+) ocupa toda la primera columna
-                  // En XL (1280px+) ocupa solo la primera columna de 3
                   "md:col-span-1 xl:col-span-1"
                 }`}
               >
@@ -116,8 +111,6 @@ const ContactSection = () => {
                       className="w-auto h-20 xs:h-24 sm:h-24 md:h-28 lg:h-32 xl:h-36"
                     />
                   </div>
-
-                  {/* Nombre de la empresa */}
                   <div className="mb-4 sm:mb-6">
                     <h2 className="text-2xl xs:text-3xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-red-orange-500 mb-1 sm:mb-2">
                       LION'S AUTO
@@ -127,7 +120,6 @@ const ContactSection = () => {
                     </h3>
                   </div>
 
-                  {/* Tagline - Solo visible en pantallas grandes */}
                   <div className="hidden lg:block mb-6 xl:mb-8">
                     <p className="text-gray-300 text-sm lg:text-base xl:text-lg leading-relaxed max-w-xs">
                       Servicios profesionales de detallado automotriz con la más
@@ -135,7 +127,6 @@ const ContactSection = () => {
                     </p>
                   </div>
 
-                  {/* Copyright - Solo visible en pantallas grandes */}
                   <div className="hidden md:block mt-4 sm:mt-6 lg:mt-8">
                     <p className="text-gray-400 text-xs sm:text-sm lg:text-base">
                       LION'S AUTO DETAILING © 2025
@@ -147,11 +138,8 @@ const ContactSection = () => {
                 </div>
               </div>
 
-              {/* Columna 2 - Links Útiles y Contacto (en pantallas MD) */}
               <div
                 className={`grid grid-cols-1 gap-8 sm:gap-12 ${
-                  // En MD: Links y contacto en la segunda columna
-                  // En XL: Links en la segunda columna, contacto en la tercera
                   "md:col-span-1 xl:col-span-2 xl:grid-cols-2"
                 }`}
               >
@@ -267,7 +255,6 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Copyright al final - Solo visible en pantallas pequeñas */}
             <div className="md:hidden mt-12 text-center">
               <div>
                 <p className="text-gray-400 text-sm xs:text-base">
