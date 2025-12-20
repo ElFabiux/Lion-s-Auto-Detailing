@@ -58,11 +58,11 @@ const PackagesSection = () => {
       id: 2,
       name: "PLATA",
       subtitle: "Limpieza Profunda",
-      basePrice: 45000,
+      basePrice: 50000,
       prices: {
-        sedan: 45000,
-        suv: 50000,
-        "4x4": 60000
+        sedan: 50000,
+        suv: 60000,
+        "4x4": 70000
       },
       icon: Star,
       featured: false,
