@@ -53,7 +53,7 @@ const ServicesStep = ({ data, updateData, onNext, onPrev, onExit }) => {
       name: "PLATA",
       subtitle: "Limpieza Profunda",
       icon: Star,
-      prices: { sedan: 50000, suv: 60000, "4x4": 70000 },
+      prices: { sedan: 60000, suv: 70000, "4x4": 80000 },
       color: "from-gray-400 to-gray-600",
       highlights: [
         "Limpieza de techo completa",
